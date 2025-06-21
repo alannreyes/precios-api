@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { logger } from '../config/logger.config';
+import * as yaml from 'js-yaml';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export interface SourceConfig {
   id: string;
@@ -11,6 +14,7 @@ export interface SourceConfig {
   enabled: boolean;
   priority: number;
   isOfficial: boolean;
+  specialization?: string;
   officialBrands?: string[];
   categories?: string[];
   shippingCountries?: string[];
@@ -22,19 +26,76 @@ export interface SourceConfig {
       sku?: string;
       brand?: string;
       image?: string;
+      specifications?: string;
+      datasheet?: string;
+      cad_files?: string;
+      cad_download?: string;
     };
     waitTime?: number;
     useProxy?: boolean;
     headers?: Record<string, string>;
   };
+  score?: number;
+  lastChecked?: Date;
+  responseTime?: number;
+  successRate?: number;
 }
 
 @Injectable()
 export class SourcesService {
   private sources: Map<string, SourceConfig> = new Map();
+  private b2bConfig: any;
 
   constructor(private readonly configService: ConfigService) {
+    this.loadB2BConfig();
     this.initializeDefaultSources();
+    this.loadAdditionalSources();
+  }
+
+  private loadB2BConfig() {
+    try {
+      const configPath = path.join(process.cwd(), 'config', 'sources.yaml');
+      const configFile = fs.readFileSync(configPath, 'utf8');
+      const config = yaml.load(configFile) as any;
+      this.b2bConfig = config.b2b_config || {};
+      logger.info('Configuración B2B cargada exitosamente');
+    } catch (error) {
+      logger.warn('No se pudo cargar configuración B2B, usando valores por defecto');
+      this.b2bConfig = {
+        enable_technical_specs: true,
+        enable_bulk_pricing: true,
+        enable_datasheet_extraction: true,
+        enable_cad_file_detection: true,
+        minimum_order_quantity_detection: true,
+        lead_time_extraction: true
+      };
+    }
+  }
+
+  private loadAdditionalSources() {
+    try {
+      const configPath = path.join(process.cwd(), 'config', 'sources.yaml');
+      const configFile = fs.readFileSync(configPath, 'utf8');
+      const config = yaml.load(configFile) as any;
+      
+      if (config.additional_sources && Array.isArray(config.additional_sources)) {
+        config.additional_sources.forEach((source: SourceConfig) => {
+          if (source.enabled) {
+            this.sources.set(source.id, {
+              ...source,
+              score: 1.0,
+              lastChecked: new Date(),
+              responseTime: 0,
+              successRate: 1.0
+            });
+          }
+        });
+        
+        logger.info(`Cargadas ${config.additional_sources.length} fuentes adicionales desde configuración`);
+      }
+    } catch (error) {
+      logger.warn('No se pudieron cargar fuentes adicionales:', error.message);
+    }
   }
 
   private initializeDefaultSources() {
@@ -68,6 +129,10 @@ export class SourcesService {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           },
         },
+        score: 1.0,
+        lastChecked: new Date(),
+        responseTime: 0,
+        successRate: 1.0,
       },
       {
         id: 'mercadolibre-mx',
@@ -95,6 +160,10 @@ export class SourcesService {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           },
         },
+        score: 1.0,
+        lastChecked: new Date(),
+        responseTime: 0,
+        successRate: 1.0,
       },
     ];
 
@@ -126,6 +195,10 @@ export class SourcesService {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           },
         },
+        score: 1.0,
+        lastChecked: new Date(),
+        responseTime: 0,
+        successRate: 1.0,
       },
     ];
 
@@ -140,6 +213,7 @@ export class SourcesService {
         enabled: true,
         priority: 2,
         isOfficial: false,
+        specialization: 'ppe_tools',
         categories: ['epp', 'herramientas', 'seguridad', 'industrial'],
         shippingCountries: ['PE'],
         scraperConfig: {
@@ -149,6 +223,7 @@ export class SourcesService {
             availability: '.stock-status',
             brand: '.product-brand',
             image: '.product-image img',
+            specifications: '.product-specs',
           },
           waitTime: 2000,
           useProxy: false,
@@ -156,6 +231,10 @@ export class SourcesService {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           },
         },
+        score: 1.0,
+        lastChecked: new Date(),
+        responseTime: 0,
+        successRate: 1.0,
       },
       {
         id: 'grainger-us',
@@ -166,6 +245,7 @@ export class SourcesService {
         enabled: true,
         priority: 2,
         isOfficial: false,
+        specialization: 'industrial_supplies',
         categories: ['industrial', 'tools', 'safety', 'maintenance'],
         shippingCountries: ['US', 'MX', 'CA'],
         scraperConfig: {
@@ -175,6 +255,8 @@ export class SourcesService {
             availability: '.availability-info',
             brand: '.manufacturer-name',
             image: '.product-image img',
+            specifications: '.product-specifications',
+            datasheet: '.datasheet-link',
           },
           waitTime: 3000,
           useProxy: true,
@@ -182,6 +264,10 @@ export class SourcesService {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           },
         },
+        score: 1.0,
+        lastChecked: new Date(),
+        responseTime: 0,
+        successRate: 1.0,
       },
     ];
 
@@ -204,7 +290,7 @@ export class SourcesService {
   getSourcesByCountry(country: string): SourceConfig[] {
     return this.getActiveSources().filter(source => 
       source.country === country || 
-      source.shippingCountries?.includes(country)
+      (source.shippingCountries && source.shippingCountries.includes(country))
     );
   }
 
@@ -213,26 +299,94 @@ export class SourcesService {
     return this.getActiveSources().filter(source => source.type === type);
   }
 
+  // NUEVOS MÉTODOS PARA FASE 3: B2B ESPECIALIZADAS
+
+  // Obtener fuentes B2B especializadas
+  getB2BSpecializedSources(): SourceConfig[] {
+    return this.getActiveSources().filter(source => source.type === 'b2b_specialized');
+  }
+
+  // Obtener fuentes por especialización B2B
+  getSourcesBySpecialization(specialization: string): SourceConfig[] {
+    return this.getB2BSpecializedSources().filter(source => 
+      source.specialization === specialization
+    );
+  }
+
+  // Obtener fuentes que soportan especificaciones técnicas
+  getSourcesWithTechnicalSpecs(): SourceConfig[] {
+    return this.getActiveSources().filter(source => 
+      source.scraperConfig.selectors.specifications ||
+      source.scraperConfig.selectors.datasheet ||
+      source.scraperConfig.selectors.cad_files ||
+      source.scraperConfig.selectors.cad_download
+    );
+  }
+
+  // Obtener fuentes por marca oficial para B2B
+  getB2BSourcesByBrand(brand: string): SourceConfig[] {
+    return this.getB2BSpecializedSources().filter(source =>
+      source.officialBrands && source.officialBrands.includes(brand)
+    );
+  }
+
+  // Obtener fuentes con capacidades específicas B2B
+  getSourcesWithCapability(capability: string): SourceConfig[] {
+    const capabilityMap = {
+      'technical_specs': (source: SourceConfig) => !!source.scraperConfig.selectors.specifications,
+      'datasheets': (source: SourceConfig) => !!source.scraperConfig.selectors.datasheet,
+      'cad_files': (source: SourceConfig) => !!source.scraperConfig.selectors.cad_files || !!source.scraperConfig.selectors.cad_download,
+      'bulk_pricing': (source: SourceConfig) => source.type === 'b2b_specialized',
+    };
+
+    const checkCapability = capabilityMap[capability];
+    if (!checkCapability) return [];
+
+    return this.getActiveSources().filter(checkCapability);
+  }
+
+  // Obtener mejores fuentes B2B por país y especialización
+  getBestB2BSourcesForCountry(country: string, specialization?: string): SourceConfig[] {
+    let sources = this.getSourcesByCountry(country).filter(source => 
+      source.type === 'b2b_specialized'
+    );
+
+    if (specialization) {
+      sources = sources.filter(source => source.specialization === specialization);
+    }
+
+    return sources.sort((a, b) => {
+      // Ordenar por score, luego por prioridad
+      const scoreA = (a.score || 1.0) + (a.priority === 1 ? 0.2 : 0);
+      const scoreB = (b.score || 1.0) + (b.priority === 1 ? 0.2 : 0);
+      return scoreB - scoreA;
+    });
+  }
+
   // Obtener fuentes oficiales
   getOfficialSources(): SourceConfig[] {
     return this.getActiveSources().filter(source => source.isOfficial);
   }
 
-  // Obtener fuentes priorizadas (ordenadas por prioridad)
+  // Obtener fuentes priorizadas
   getPrioritizedSources(): SourceConfig[] {
-    return this.getActiveSources().sort((a, b) => a.priority - b.priority);
+    return this.getActiveSources().sort((a, b) => {
+      const scoreA = (a.score || 1.0) * (3 - a.priority);
+      const scoreB = (b.score || 1.0) * (3 - b.priority);
+      return scoreB - scoreA;
+    });
   }
 
-  // Obtener fuentes para búsqueda global
+  // Obtener fuentes globales
   getGlobalSources(countries?: string[]): SourceConfig[] {
-    if (!countries || countries.includes('ALL')) {
-      return this.getPrioritizedSources();
+    if (!countries || countries.length === 0) {
+      return this.getActiveSources();
     }
 
     return this.getActiveSources().filter(source =>
       countries.includes(source.country) ||
-      source.shippingCountries?.some(country => countries.includes(country))
-    ).sort((a, b) => a.priority - b.priority);
+      (source.shippingCountries && source.shippingCountries.some(c => countries.includes(c)))
+    );
   }
 
   // Obtener fuente por ID
@@ -240,14 +394,18 @@ export class SourcesService {
     return this.sources.get(id);
   }
 
-  // Actualizar score de fuente (para auto-mantenimiento futuro)
+  // Actualizar score de fuente
   updateSourceScore(id: string, score: number, responseTime?: number) {
     const source = this.sources.get(id);
     if (source) {
-      // Por ahora solo logging, en el futuro se guardará en BD
-      logger.info(`Score actualizado para fuente ${id}`, {
+      source.score = Math.max(0, Math.min(1, score));
+      source.lastChecked = new Date();
+      if (responseTime !== undefined) {
+        source.responseTime = responseTime;
+      }
+      
+      logger.debug(`Score actualizado para fuente ${id}: ${score}`, {
         sourceId: id,
-        sourceName: source.name,
         newScore: score,
         responseTime,
       });
@@ -256,21 +414,60 @@ export class SourcesService {
 
   // Obtener estadísticas de fuentes
   getSourcesStats() {
-    const sources = Array.from(this.sources.values());
+    const sources = this.getActiveSources();
+    const total = sources.length;
+    const byType = sources.reduce((acc, source) => {
+      acc[source.type] = (acc[source.type] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const byCountry = sources.reduce((acc, source) => {
+      acc[source.country] = (acc[source.country] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // Estadísticas específicas B2B
+    const b2bSources = this.getB2BSpecializedSources();
+    const bySpecialization = b2bSources.reduce((acc, source) => {
+      if (source.specialization) {
+        acc[source.specialization] = (acc[source.specialization] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    const withTechnicalSpecs = this.getSourcesWithTechnicalSpecs().length;
+    const withDatasheets = this.getSourcesWithCapability('datasheets').length;
+    const withCADFiles = this.getSourcesWithCapability('cad_files').length;
+
     return {
-      total: sources.length,
-      active: sources.filter(s => s.enabled).length,
-      byType: {
-        marketplace: sources.filter(s => s.type === 'marketplace').length,
-        b2b_specialized: sources.filter(s => s.type === 'b2b_specialized').length,
-        direct_brand: sources.filter(s => s.type === 'direct_brand').length,
-        distributor: sources.filter(s => s.type === 'distributor').length,
+      total,
+      active: total,
+      byType,
+      byCountry,
+      b2b: {
+        total: b2bSources.length,
+        bySpecialization,
+        capabilities: {
+          technicalSpecs: withTechnicalSpecs,
+          datasheets: withDatasheets,
+          cadFiles: withCADFiles,
+        }
       },
-      byCountry: sources.reduce((acc, source) => {
-        acc[source.country] = (acc[source.country] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>),
-      official: sources.filter(s => s.isOfficial).length,
+      avgScore: sources.reduce((sum, s) => sum + (s.score || 1.0), 0) / total,
     };
+  }
+
+  // Obtener configuración B2B
+  getB2BConfig() {
+    return this.b2bConfig;
+  }
+
+  // Recargar fuentes desde configuración
+  async reloadSources() {
+    this.sources.clear();
+    this.loadB2BConfig();
+    this.initializeDefaultSources();
+    this.loadAdditionalSources();
+    logger.info('Fuentes recargadas exitosamente');
   }
 } 

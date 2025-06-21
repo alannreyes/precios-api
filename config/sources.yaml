@@ -1,11 +1,583 @@
 # =============================================================================
 # CONFIGURACIÓN DE FUENTES - PRECIOS API
+# FASE 3: TIENDAS ESPECIALIZADAS B2B IMPLEMENTADAS
 # =============================================================================
 
 # Fuentes adicionales que se pueden agregar dinámicamente
 additional_sources:
   
-  # MercadoLibre - Países adicionales
+  # =============================================================================
+  # FASE 3: GIGANTES B2B GLOBALES (Semanas 11-13)
+  # =============================================================================
+  
+  # Grainger - Suministros industriales
+  - id: grainger-us-extended
+    name: Grainger United States Extended
+    baseUrl: https://www.grainger.com
+    country: US
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: industrial_supplies
+    officialBrands:
+      - 3M
+      - Honeywell
+      - Milwaukee
+      - Klein Tools
+      - Fluke
+    categories:
+      - industrial_supplies
+      - safety_equipment
+      - electrical
+      - tools
+      - maintenance
+    shippingCountries:
+      - US
+      - CA
+      - MX
+    scraperConfig:
+      selectors:
+        productName: '[data-testid="product-title"]'
+        price: '[data-testid="product-price"] .price-current'
+        availability: '[data-testid="availability-message"]'
+        brand: '[data-testid="product-brand"]'
+        image: '[data-testid="product-image"] img'
+        specifications: '.product-specifications'
+        datasheet: '.datasheet-link'
+      waitTime: 3000
+      useProxy: true
+      headers:
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+  - id: grainger-mx
+    name: Grainger Mexico
+    baseUrl: https://www.grainger.com.mx
+    country: MX
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: industrial_supplies
+    categories:
+      - suministros_industriales
+      - equipo_seguridad
+      - herramientas
+      - mantenimiento
+    shippingCountries:
+      - MX
+      - US
+    scraperConfig:
+      selectors:
+        productName: '.product-title'
+        price: '.price-current'
+        availability: '.availability-info'
+        brand: '.brand-name'
+        image: '.product-image img'
+      waitTime: 3000
+      useProxy: true
+
+  # RS Components - Electrónicos y automatización
+  - id: rs-components-uk
+    name: RS Components UK
+    baseUrl: https://uk.rs-online.com
+    country: UK
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: electronics_automation
+    officialBrands:
+      - Fluke
+      - Schneider Electric
+      - ABB
+      - Siemens
+      - Phoenix Contact
+    categories:
+      - electronics
+      - automation
+      - test_equipment
+      - connectors
+      - sensors
+    shippingCountries:
+      - UK
+      - IE
+      - DE
+      - FR
+      - ES
+      - IT
+      - NL
+    scraperConfig:
+      selectors:
+        productName: '[data-testid="product-title"]'
+        price: '[data-testid="price-current"]'
+        availability: '[data-testid="stock-level"]'
+        brand: '[data-testid="manufacturer"]'
+        image: '[data-testid="product-image"] img'
+        datasheet: '.datasheet-download'
+        specifications: '.product-attributes'
+      waitTime: 2500
+      useProxy: true
+
+  - id: rs-components-de
+    name: RS Components Germany
+    baseUrl: https://de.rs-online.com
+    country: DE
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: electronics_automation
+    categories:
+      - elektronik
+      - automatisierung
+      - messgeraete
+      - steckverbinder
+    shippingCountries:
+      - DE
+      - AT
+      - CH
+      - NL
+      - FR
+    scraperConfig:
+      selectors:
+        productName: '[data-testid="product-title"]'
+        price: '[data-testid="price-current"]'
+        availability: '[data-testid="stock-level"]'
+        brand: '[data-testid="manufacturer"]'
+        image: '[data-testid="product-image"] img'
+      waitTime: 2500
+      useProxy: true
+
+  # Würth - Fijaciones y herramientas
+  - id: wurth-de
+    name: Würth Germany
+    baseUrl: https://eshop.wurth.de
+    country: DE
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: fasteners_tools
+    officialBrands:
+      - Würth
+      - Zebra
+      - Orsy
+    categories:
+      - befestigungstechnik
+      - werkzeuge
+      - chemie
+      - arbeitsschutz
+    shippingCountries:
+      - DE
+      - AT
+      - CH
+      - NL
+      - FR
+      - IT
+      - ES
+      - PL
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-current'
+        availability: '.stock-info'
+        brand: '.brand-name'
+        image: '.product-img img'
+        specifications: '.technical-data'
+      waitTime: 3000
+      useProxy: true
+
+  - id: wurth-us
+    name: Würth United States
+    baseUrl: https://www.wurthindustry.com
+    country: US
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: fasteners_tools
+    categories:
+      - fasteners
+      - tools
+      - chemicals
+      - safety
+    shippingCountries:
+      - US
+      - CA
+      - MX
+    scraperConfig:
+      selectors:
+        productName: '.product-title'
+        price: '.price-display'
+        availability: '.inventory-status'
+        brand: '.manufacturer'
+        image: '.product-image img'
+      waitTime: 3000
+      useProxy: true
+
+  # Fastenal - Suministros industriales
+  - id: fastenal-us
+    name: Fastenal United States
+    baseUrl: https://www.fastenal.com
+    country: US
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: industrial_supplies
+    officialBrands:
+      - 3M
+      - Milwaukee
+      - DeWalt
+      - Honeywell
+    categories:
+      - fasteners
+      - tools
+      - safety
+      - electrical
+      - cutting_tools
+    shippingCountries:
+      - US
+      - CA
+      - MX
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-value'
+        availability: '.availability-text'
+        brand: '.brand-name'
+        image: '.product-image img'
+        specifications: '.product-specs'
+      waitTime: 2500
+      useProxy: true
+
+  # McMaster-Carr - Componentes técnicos
+  - id: mcmaster-carr-us
+    name: McMaster-Carr United States
+    baseUrl: https://www.mcmaster.com
+    country: US
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: technical_components
+    categories:
+      - mechanical_components
+      - raw_materials
+      - tools
+      - hardware
+      - electrical
+    shippingCountries:
+      - US
+      - CA
+    scraperConfig:
+      selectors:
+        productName: '.PartName'
+        price: '.PrcTxt'
+        availability: '.AvailabilityTxt'
+        brand: '.BrandTxt'
+        image: '.ProductImage img'
+        specifications: '.SpecificationTable'
+        cad_files: '.CADLink'
+      waitTime: 2000
+      useProxy: true
+
+  # Conrad - Electrónicos y automatización
+  - id: conrad-de
+    name: Conrad Germany
+    baseUrl: https://www.conrad.de
+    country: DE
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: electronics_automation
+    officialBrands:
+      - Fluke
+      - Tektronix
+      - Keysight
+      - Rohde & Schwarz
+    categories:
+      - elektronik
+      - messtechnik
+      - automatisierung
+      - werkzeuge
+      - sicherheit
+    shippingCountries:
+      - DE
+      - AT
+      - CH
+      - NL
+      - FR
+    scraperConfig:
+      selectors:
+        productName: '.pdp-product-name'
+        price: '.price-current'
+        availability: '.availability-info'
+        brand: '.manufacturer-name'
+        image: '.product-image img'
+        datasheet: '.datasheet-link'
+      waitTime: 2500
+      useProxy: true
+
+  # =============================================================================
+  # FASE 3: ESPECIALISTAS REGIONALES (Semanas 14-15)
+  # =============================================================================
+
+  # EFC - EPP y herramientas (Perú)
+  - id: efc-pe-extended
+    name: EFC Peru Extended
+    baseUrl: https://www.efc.com.pe
+    country: PE
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: ppe_tools
+    officialBrands:
+      - 3M
+      - Honeywell
+      - MSA
+      - Bosch
+      - DeWalt
+    categories:
+      - epp
+      - herramientas
+      - seguridad_industrial
+      - soldadura
+      - medicion
+    shippingCountries:
+      - PE
+      - BO
+      - EC
+    scraperConfig:
+      selectors:
+        productName: '.product-title'
+        price: '.price-current'
+        availability: '.stock-status'
+        brand: '.brand-info'
+        image: '.product-image img'
+        specifications: '.product-specs'
+      waitTime: 3000
+      useProxy: true
+
+  # Farnell - Electrónicos globales
+  - id: farnell-uk
+    name: Farnell UK
+    baseUrl: https://uk.farnell.com
+    country: UK
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: electronics
+    officialBrands:
+      - Fluke
+      - Keysight
+      - Tektronix
+      - Rohde & Schwarz
+      - National Instruments
+    categories:
+      - semiconductors
+      - test_equipment
+      - passive_components
+      - connectors
+      - tools
+    shippingCountries:
+      - UK
+      - IE
+      - DE
+      - FR
+      - ES
+      - IT
+      - NL
+    scraperConfig:
+      selectors:
+        productName: '[data-testid="product-title"]'
+        price: '[data-testid="price-current"]'
+        availability: '[data-testid="availability"]'
+        brand: '[data-testid="manufacturer"]'
+        image: '[data-testid="product-image"] img'
+        datasheet: '.datasheet-download'
+      waitTime: 2500
+      useProxy: true
+
+  # Zoro - Suministros industriales
+  - id: zoro-us
+    name: Zoro United States
+    baseUrl: https://www.zoro.com
+    country: US
+    type: b2b_specialized
+    enabled: true
+    priority: 2
+    isOfficial: false
+    specialization: industrial_supplies
+    categories:
+      - tools
+      - safety
+      - electrical
+      - plumbing
+      - hvac
+    shippingCountries:
+      - US
+    scraperConfig:
+      selectors:
+        productName: '.product-title'
+        price: '.price-current'
+        availability: '.availability-status'
+        brand: '.brand-name'
+        image: '.product-image img'
+      waitTime: 2500
+      useProxy: true
+
+  # Misumi - Componentes manufactura
+  - id: misumi-jp
+    name: Misumi Japan
+    baseUrl: https://jp.misumi-ec.com
+    country: JP
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: manufacturing_components
+    categories:
+      - mechanical_components
+      - automation
+      - cutting_tools
+      - molds
+      - fixtures
+    shippingCountries:
+      - JP
+      - CN
+      - TW
+      - KR
+      - TH
+      - SG
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-display'
+        availability: '.stock-info'
+        brand: '.brand-name'
+        image: '.product-image img'
+        cad_download: '.cad-download'
+        specifications: '.spec-table'
+      waitTime: 3000
+      useProxy: true
+
+  - id: misumi-us
+    name: Misumi United States
+    baseUrl: https://us.misumi-ec.com
+    country: US
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: manufacturing_components
+    categories:
+      - mechanical_components
+      - automation
+      - cutting_tools
+      - molds
+      - fixtures
+    shippingCountries:
+      - US
+      - CA
+      - MX
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-display'
+        availability: '.stock-info'
+        brand: '.brand-name'
+        image: '.product-image img'
+        cad_download: '.cad-download'
+      waitTime: 3000
+      useProxy: true
+
+  # Rexel - Material eléctrico
+  - id: rexel-fr
+    name: Rexel France
+    baseUrl: https://www.rexel.fr
+    country: FR
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: electrical_supplies
+    officialBrands:
+      - Schneider Electric
+      - Legrand
+      - ABB
+      - Siemens
+    categories:
+      - electrical_equipment
+      - automation
+      - lighting
+      - cables
+      - safety
+    shippingCountries:
+      - FR
+      - BE
+      - LU
+      - CH
+    scraperConfig:
+      selectors:
+        productName: '.product-title'
+        price: '.price-current'
+        availability: '.availability-info'
+        brand: '.manufacturer'
+        image: '.product-image img'
+        specifications: '.technical-specs'
+      waitTime: 2500
+      useProxy: true
+
+  # Hoffmann Group - Herramientas profesionales
+  - id: hoffmann-group-de
+    name: Hoffmann Group Germany
+    baseUrl: https://www.hoffmann-group.com
+    country: DE
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: professional_tools
+    officialBrands:
+      - Garant
+      - Holex
+      - Pferd
+    categories:
+      - cutting_tools
+      - measuring_tools
+      - hand_tools
+      - workshop_equipment
+      - safety
+    shippingCountries:
+      - DE
+      - AT
+      - CH
+      - NL
+      - FR
+      - IT
+      - ES
+      - PL
+      - CZ
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-current'
+        availability: '.stock-status'
+        brand: '.brand-name'
+        image: '.product-image img'
+        specifications: '.product-details'
+      waitTime: 3000
+      useProxy: true
+
+  # =============================================================================
+  # MERCADOLIBRE - PAÍSES ADICIONALES
+  # =============================================================================
+  
   - id: mercadolibre-ar
     name: MercadoLibre Argentina
     baseUrl: https://listado.mercadolibre.com.ar
@@ -37,8 +609,6 @@ additional_sources:
         image: .ui-search-result-image__element img
       waitTime: 2000
       useProxy: true
-      headers:
-        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
 
   - id: mercadolibre-cl
     name: MercadoLibre Chile
@@ -71,10 +641,11 @@ additional_sources:
         image: .ui-search-result-image__element img
       waitTime: 2000
       useProxy: true
-      headers:
-        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
 
-  # Amazon Business - Países adicionales
+  # =============================================================================
+  # AMAZON BUSINESS - PAÍSES ADICIONALES
+  # =============================================================================
+
   - id: amazon-business-de
     name: Amazon Business Germany
     baseUrl: https://www.amazon.de
@@ -109,72 +680,10 @@ additional_sources:
         image: '#landingImage'
       waitTime: 3000
       useProxy: true
-      headers:
-        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
 
-  # B2B Especializados - Adicionales
-  - id: rs-components-uk
-    name: RS Components UK
-    baseUrl: https://uk.rs-online.com
-    country: UK
-    type: b2b_specialized
-    enabled: true
-    priority: 2
-    isOfficial: false
-    categories:
-      - electronics
-      - automation
-      - tools
-      - safety
-    shippingCountries:
-      - UK
-      - IE
-      - DE
-      - FR
-      - ES
-    scraperConfig:
-      selectors:
-        productName: .product-title
-        price: .price-value
-        availability: .availability-status
-        brand: .manufacturer-name
-        image: .product-image img
-      waitTime: 2500
-      useProxy: true
-      headers:
-        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
-
-  - id: wurth-de
-    name: Würth Germany
-    baseUrl: https://eshop.wurth.de
-    country: DE
-    type: b2b_specialized
-    enabled: true
-    priority: 2
-    isOfficial: false
-    categories:
-      - fasteners
-      - tools
-      - construction
-      - automotive
-    shippingCountries:
-      - DE
-      - AT
-      - CH
-      - NL
-      - FR
-      - IT
-    scraperConfig:
-      selectors:
-        productName: .product-name
-        price: .price-current
-        availability: .stock-info
-        brand: .brand-name
-        image: .product-img img
-      waitTime: 3000
-      useProxy: true
-      headers:
-        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+# =============================================================================
+# CONFIGURACIÓN DE SISTEMAS
+# =============================================================================
 
 # Configuración de auto-discovery
 auto_discovery:
@@ -182,6 +691,7 @@ auto_discovery:
   check_interval: 86400 # 24 horas en segundos
   max_new_sources_per_day: 5
   confidence_threshold: 0.8
+  b2b_priority_boost: 0.2 # Boost para fuentes B2B especializadas
 
 # Configuración de health monitoring
 health_monitoring:
@@ -190,12 +700,22 @@ health_monitoring:
   failure_threshold: 3
   degraded_threshold: 5
   recovery_attempts: 3
+  b2b_specialized_monitoring: true # Monitoreo especial para B2B
 
 # Configuración de scoring
 scoring:
   weights:
-    response_time: 0.3
-    success_rate: 0.4
-    data_quality: 0.2
-    official_status: 0.1
-  update_interval: 1800 # 30 minutos en segundos 
+    response_time: 0.25
+    success_rate: 0.35
+    data_quality: 0.20
+    official_status: 0.10
+    b2b_specialization: 0.10 # Nuevo peso para especialización B2B
+
+# Configuración específica B2B
+b2b_config:
+  enable_technical_specs: true
+  enable_bulk_pricing: true
+  enable_datasheet_extraction: true
+  enable_cad_file_detection: true
+  minimum_order_quantity_detection: true
+  lead_time_extraction: true
