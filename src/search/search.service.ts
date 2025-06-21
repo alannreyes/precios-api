@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
+import { Cache } from 'cache-manager';
 import { SourcesService } from '../sources/sources.service';
 import { ScrapingService, ScrapingResult, SearchQuery } from '../scraping/scraping.service';
 import { AIService, ProductValidationRequest } from '../ai/ai.service';
+import { PerformanceService } from '../performance/performance.service';
 import { logger } from '../config/logger.config';
 
 export interface SearchRequest {
@@ -54,16 +57,76 @@ export class SearchService {
     private readonly scrapingService: ScrapingService,
     private readonly aiService: AIService,
     private readonly configService: ConfigService,
+    private readonly performanceService: PerformanceService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
+
+  // Métodos de caché simplificados
+  private async getFromCache<T>(key: string): Promise<T | null> {
+    try {
+      const value = await this.cacheManager.get<T>(key);
+      return value || null;
+    } catch (error) {
+      logger.error('Error al obtener del caché:', error);
+      return null;
+    }
+  }
+
+  private async setToCache<T>(key: string, value: T, ttl?: number): Promise<void> {
+    try {
+      await this.cacheManager.set(key, value, ttl);
+      logger.debug(`Guardado en caché: ${key}`);
+    } catch (error) {
+      logger.error('Error al guardar en caché:', error);
+    }
+  }
+
+  private generateCacheKey(product: string, country?: string, maxResults?: number): string {
+    const baseKey = `search:${product.toLowerCase().replace(/\s+/g, '_')}`;
+    if (country) {
+      return `${baseKey}:${country}:${maxResults || 10}`;
+    }
+    return `${baseKey}:global:${maxResults || 20}`;
+  }
 
   async search(request: SearchRequest): Promise<SearchResponse> {
     const startTime = Date.now();
     
-    logger.info('Iniciando búsqueda', {
+    // Generar clave de caché
+    const cacheKey = this.generateCacheKey(
+      request.product,
+      request.country || (request.countries ? 'global' : undefined),
+      request.maxResults
+    );
+
+    // Intentar obtener del caché primero
+    const cachedResult = await this.getFromCache<SearchResponse>(cacheKey);
+    if (cachedResult) {
+      // Registrar hit de caché
+      this.performanceService.recordCacheEvent(true);
+      
+      logger.info('Resultado obtenido del caché', {
+        product: request.product,
+        cacheKey,
+        originalResponseTime: cachedResult.responseTimeMs,
+      });
+      
+      // Actualizar timestamp pero mantener tiempo de respuesta original
+      return {
+        ...cachedResult,
+        timestamp: new Date(),
+      };
+    }
+    
+    // Registrar miss de caché
+    this.performanceService.recordCacheEvent(false);
+    
+    logger.info('Iniciando búsqueda (no encontrada en caché)', {
       product: request.product,
       country: request.country,
       countries: request.countries,
       globalSearch: !!request.countries,
+      cacheKey,
     });
 
     try {
@@ -167,10 +230,27 @@ export class SearchService {
         isGlobalSearch,
       });
 
+      // Guardar en caché (TTL: 5 minutos para búsquedas normales, 10 minutos para globales)
+      const cacheTTL = isGlobalSearch ? 600 : 300;
+      await this.setToCache(cacheKey, response, cacheTTL);
+      
+      logger.info('Resultado guardado en caché', {
+        cacheKey,
+        ttl: cacheTTL,
+      });
+
+      // Registrar métricas de búsqueda
+      this.performanceService.recordSearch(responseTime, filteredResults.length);
+      this.performanceService.recordRequest(responseTime, true);
+
       return response;
 
     } catch (error) {
       const responseTime = Date.now() - startTime;
+      
+      // Registrar error en métricas
+      this.performanceService.recordRequest(responseTime, false);
+      
       logger.error('Error en búsqueda', {
         product: request.product,
         error: error.message,

@@ -11,6 +11,8 @@ import { SourcesModule } from './sources/sources.module';
 import { ScrapingModule } from './scraping/scraping.module';
 import { SearchModule } from './search/search.module';
 import { AIModule } from './ai/ai.module';
+import { AppCacheModule } from './cache/cache.module';
+import { PerformanceModule } from './performance/performance.module';
 
 @Module({
   imports: [
@@ -75,6 +77,8 @@ import { AIModule } from './ai/ai.module';
     }),
 
     // Módulos de funcionalidad
+    AppCacheModule,
+    PerformanceModule,
     SourcesModule,
     ScrapingModule,
     AIModule,
