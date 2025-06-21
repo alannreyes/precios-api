@@ -574,263 +574,111 @@ additional_sources:
       waitTime: 3000
       useProxy: true
 
-  # ====================================
-  # FASE 5: MERCADOS MANUFACTUREROS + ASIA
-  # ====================================
-
-  # CHINA - Gigante E-commerce
-  - id: tmall-official-cn
-    name: "Tmall Official Stores"
-    baseUrl: "https://www.tmall.com"
-    country: "CN"
-    type: "marketplace_asia"
+  # =============================================================================
+  # MERCADOLIBRE - PAÍSES ADICIONALES
+  # =============================================================================
+  
+  - id: mercadolibre-ar
+    name: MercadoLibre Argentina
+    baseUrl: https://listado.mercadolibre.com.ar
+    country: AR
+    type: marketplace
     enabled: true
     priority: 1
     isOfficial: true
-    specialization: "electronics_manufacturing"
-    categories: ["electronics", "manufacturing", "components"]
-    shippingCountries: ["CN", "TW", "HK", "SG", "MY", "TH", "VN", "ID", "PH"]
-    scraperConfig:
-      selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 3000
-      useProxy: true
-
-  # CHINA - B2B Marketplace
-  - id: alibaba-1688-cn
-    name: "1688.com B2B Marketplace"
-    baseUrl: "https://www.1688.com"
-    country: "CN"
-    type: "b2b_asia"
-    enabled: true
-    priority: 1
-    isOfficial: false
-    specialization: "manufacturing_components"
-    categories: ["manufacturing", "components", "oem", "bulk"]
-    shippingCountries: ["CN", "TW", "HK", "SG", "MY", "TH", "VN", "ID", "PH", "KR", "JP"]
-    scraperConfig:
-      selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 3000
-      useProxy: true
-
-  # JAPÓN - Especializado Industrial
-  - id: monotaro-jp
-    name: "MonotaRO Japan"
-    baseUrl: "https://www.monotaro.com"
-    country: "JP"
-    type: "b2b_asia"
-    enabled: true
-    priority: 1
-    isOfficial: false
-    specialization: "industrial_supplies"
-    categories: ["industrial", "supplies", "automation", "cad"]
-    shippingCountries: ["JP", "KR", "TW", "SG", "MY", "TH"]
-    scraperConfig:
-      selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 2500
-      useProxy: true
-
-  # SINGAPUR - Hub Regional
-  - id: lazada-business-sg
-    name: "Lazada Business Singapore"
-    baseUrl: "https://www.lazada.sg/business"
-    country: "SG"
-    type: "marketplace_asia"
-    enabled: true
-    priority: 1
-    isOfficial: false
-    specialization: "electronics_automation"
-    categories: ["electronics", "automation", "regional"]
-    shippingCountries: ["SG", "MY", "TH", "ID", "PH", "VN", "BN", "KH", "LA", "MM"]
-    scraperConfig:
-      selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 2500
-      useProxy: true
-
-  # SINGAPUR - Shopee B2B
-  - id: shopee-business-sg
-    name: "Shopee Business Singapore"
-    baseUrl: "https://shopee.sg/business"
-    country: "SG"
-    type: "marketplace_asia"
-    enabled: true
-    priority: 1
-    isOfficial: false
-    specialization: "electronics_automation"
-    categories: ["electronics", "automation", "b2b", "regional"]
-    shippingCountries: ["SG", "MY", "TH", "ID", "PH", "VN", "BN", "KH", "LA", "MM"]
-    scraperConfig:
-      selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 2500
-      useProxy: true
-
-  # TAIWÁN - PCHome B2B
-  - id: pchome-b2b-tw
-    name: "PCHome B2B Taiwan"
-    baseUrl: "https://b2b.pchome.com.tw"
-    country: "TW"
-    type: "marketplace_asia"
-    enabled: true
-    priority: 1
-    isOfficial: false
-    specialization: "electronics_manufacturing"
-    categories: ["electronics", "manufacturing", "components", "b2b"]
-    shippingCountries: ["TW", "CN", "HK", "SG", "MY", "TH", "JP", "KR"]
-    scraperConfig:
-      selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 3000
-      useProxy: true
-
-  # TAIWÁN - Ruten Business
-  - id: ruten-business-tw
-    name: "Ruten Business Taiwan"
-    baseUrl: "https://business.ruten.com.tw"
-    country: "TW"
-    type: "marketplace_asia"
-    enabled: true
-    priority: 1
-    isOfficial: false
-    specialization: "electronics_manufacturing"
-    categories: ["electronics", "manufacturing", "components", "oem"]
-    shippingCountries: ["TW", "CN", "HK", "SG", "MY", "TH", "JP", "KR"]
-    scraperConfig:
-      selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 3000
-      useProxy: true
-
-  # COREA DEL SUR - Gmarket B2B
-  - id: gmarket-b2b-kr
-    name: "Gmarket B2B Korea"
-    baseUrl: "https://b2b.gmarket.co.kr"
-    country: "KR"
-    type: "marketplace_asia"
-    enabled: true
-    priority: 1
-    isOfficial: false
-    specialization: "electronics_manufacturing"
-    categories: ["electronics", "manufacturing", "components", "b2b"]
-    shippingCountries: ["KR", "JP", "CN", "TW", "SG", "MY", "TH", "VN"]
-    scraperConfig:
-      selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 3000
-      useProxy: true
-
-  # COREA DEL SUR - 11Street Business
-  - id: 11street-business-kr
-    name: "11Street Business Korea"
-    baseUrl: "https://business.11st.co.kr"
-    country: "KR"
-    type: "marketplace_asia"
-    enabled: true
-    priority: 1
-    isOfficial: false
-    specialization: "electronics_manufacturing"
-    categories: ["electronics", "manufacturing", "components", "b2b"]
-    shippingCountries: ["KR", "JP", "CN", "TW", "SG", "MY", "TH", "VN"]
-    scraperConfig:
-      selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 3000
-      useProxy: true
-
-  # JAPÓN - Amazon Business JP
-  - id: amazon-business-jp
-    name: "Amazon Business Japan"
-    baseUrl: "https://www.amazon.co.jp/business"
-    country: "JP"
-    type: "marketplace_asia"
-    enabled: true
-    priority: 2
-    isOfficial: true
-    specialization: "electronics_manufacturing"
     officialBrands:
-      - Sony
-      - Panasonic
-      - Canon
-      - Nikon
-      - Olympus
-      - Fujifilm
-      - Mitsubishi
-      - Hitachi
-      - Toshiba
-      - Sharp
-    categories: ["electronics", "manufacturing", "components", "b2b", "official"]
-    shippingCountries: ["JP", "KR", "TW", "SG", "MY", "TH", "VN", "Global"]
+      - Bosch
+      - 3M
+      - Makita
+      - DeWalt
+      - Stanley
+    categories:
+      - herramientas
+      - epp
+      - instrumentos
+      - construccion
+    shippingCountries:
+      - AR
+      - UY
     scraperConfig:
       selectors:
-        productName: '[data-cy="title-recipe"]'
-        price: '.a-price-whole'
-        availability: '[data-feature-name="availability"] span'
-        brand: '[data-cy="brand-recipe"]'
-        image: '[data-a-image-name="landingImage"] img'
-        businessPrice: '.business-price'
-        bulk: '.bulk-pricing'
-      waitTime: 2500
+        productName: .ui-search-item__title
+        price: .andes-money-amount__fraction
+        availability: .ui-search-item__stock-info
+        brand: .ui-search-item__brand-name
+        image: .ui-search-result-image__element img
+      waitTime: 2000
       useProxy: true
 
-  # JAPÓN - Rakuten Business
-  - id: rakuten-business-jp
-    name: "Rakuten Business Japan"
-    baseUrl: "https://business.rakuten.co.jp"
-    country: "JP"
-    type: "marketplace_asia"
+  - id: mercadolibre-cl
+    name: MercadoLibre Chile
+    baseUrl: https://listado.mercadolibre.cl
+    country: CL
+    type: marketplace
     enabled: true
     priority: 1
-    isOfficial: false
-    specialization: "electronics_manufacturing"
-    categories: ["electronics", "manufacturing", "components", "b2b"]
-    shippingCountries: ["JP", "KR", "TW", "SG", "MY", "TH", "VN"]
+    isOfficial: true
+    officialBrands:
+      - Bosch
+      - 3M
+      - Makita
+      - DeWalt
+      - Stanley
+    categories:
+      - herramientas
+      - epp
+      - instrumentos
+      - construccion
+    shippingCountries:
+      - CL
+      - PE
     scraperConfig:
       selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 2500
+        productName: .ui-search-item__title
+        price: .andes-money-amount__fraction
+        availability: .ui-search-item__stock-info
+        brand: .ui-search-item__brand-name
+        image: .ui-search-result-image__element img
+      waitTime: 2000
+      useProxy: true
+
+  # =============================================================================
+  # AMAZON BUSINESS - PAÍSES ADICIONALES
+  # =============================================================================
+
+  - id: amazon-business-de
+    name: Amazon Business Germany
+    baseUrl: https://www.amazon.de
+    country: DE
+    type: marketplace
+    enabled: true
+    priority: 1
+    isOfficial: true
+    officialBrands:
+      - Bosch
+      - Würth
+      - Festo
+      - Hilti
+      - 3M
+    categories:
+      - tools
+      - safety
+      - instruments
+      - construction
+    shippingCountries:
+      - DE
+      - AT
+      - CH
+      - NL
+      - FR
+    scraperConfig:
+      selectors:
+        productName: '[data-cy="title-recipe-title"]'
+        price: .a-price-whole
+        availability: '#availability span'
+        brand: '#bylineInfo'
+        image: '#landingImage'
+      waitTime: 3000
       useProxy: true
 
 # =============================================================================
@@ -1457,3 +1305,354 @@ b2b_config:
   enable_cad_file_detection: true
   minimum_order_quantity_detection: true
   lead_time_extraction: true
+
+  # ====================================
+  # FASE 5: MERCADOS MANUFACTUREROS + ASIA
+  # Objetivo: Cobertura manufacturera Asia + Validación global
+  # ====================================
+
+# CHINA - Gigantes E-commerce
+- id: tmall-official-cn
+  name: "Tmall Official Stores"
+  baseUrl: "https://www.tmall.com"
+  country: "CN"
+  type: "marketplace_asia"
+  enabled: true
+  priority: 1
+  isOfficial: true
+  specialization: "electronics_manufacturing"
+  categories: ["electronics", "manufacturing", "components"]
+  shippingCountries: ["CN", "TW", "HK", "SG", "MY", "TH", "VN", "ID", "PH"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 3000
+    useProxy: true
+
+- id: alibaba-1688-cn
+  name: "1688.com B2B Marketplace"
+  baseUrl: "https://www.1688.com"
+  country: "CN"
+  type: "b2b_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "manufacturing_components"
+  categories: ["manufacturing", "components", "oem", "bulk"]
+  shippingCountries: ["CN", "TW", "HK", "SG", "MY", "TH", "VN", "ID", "PH", "KR", "JP"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 3000
+    useProxy: true
+
+# TAIWÁN - Mercados Tecnológicos
+- id: pchome-b2b-tw
+  name: "PCHome B2B Taiwan"
+  baseUrl: "https://b2b.pchome.com.tw"
+  country: "TW"
+  type: "b2b_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "electronics_automation"
+  categories: ["electronics", "automation", "components"]
+  shippingCountries: ["TW", "CN", "HK", "SG", "MY", "TH", "PH"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true
+
+- id: ruten-business-tw
+  name: "Ruten Business Taiwan"
+  baseUrl: "https://business.ruten.com.tw"
+  country: "TW"
+  type: "marketplace_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "electronics_components"
+  categories: ["electronics", "components", "oem"]
+  shippingCountries: ["TW", "CN", "HK", "SG", "MY"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true
+
+# COREA DEL SUR - Mercados Tecnológicos
+- id: gmarket-b2b-kr
+  name: "Gmarket B2B Korea"
+  baseUrl: "https://b2b.gmarket.co.kr"
+  country: "KR"
+  type: "b2b_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "electronics_automation"
+  categories: ["electronics", "automation", "components"]
+  shippingCountries: ["KR", "CN", "JP", "TW", "SG", "MY", "TH", "VN"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 3000
+    useProxy: true
+
+- id: elevenst-business-kr
+  name: "11Street Business Korea"
+  baseUrl: "https://business.11st.co.kr"
+  country: "KR"
+  type: "marketplace_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "industrial_supplies"
+  categories: ["industrial", "supplies", "automation"]
+  shippingCountries: ["KR", "CN", "JP", "TW", "SG", "MY"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 3000
+    useProxy: true
+
+# JAPÓN - Mercados Especializados
+- id: amazon-business-jp
+  name: "Amazon Business Japan"
+  baseUrl: "https://www.amazon.co.jp/b2b"
+  country: "JP"
+  type: "marketplace_asia"
+  enabled: true
+  priority: 1
+  isOfficial: true
+  specialization: "industrial_supplies"
+  categories: ["industrial", "supplies", "automation", "tools"]
+  shippingCountries: ["JP", "KR", "TW", "CN", "SG", "MY", "TH", "AU"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 3000
+    useProxy: true
+
+- id: monotaro-jp
+  name: "MonotaRO Japan"
+  baseUrl: "https://www.monotaro.com"
+  country: "JP"
+  type: "b2b_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "industrial_supplies"
+  categories: ["industrial", "supplies", "automation", "cad"]
+  shippingCountries: ["JP", "KR", "TW", "SG", "MY", "TH"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true
+
+- id: askul-business-jp
+  name: "ASKUL Business Japan"
+  baseUrl: "https://www.askul.co.jp"
+  country: "JP"
+  type: "b2b_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "office_industrial"
+  categories: ["office", "industrial", "supplies"]
+  shippingCountries: ["JP", "KR", "TW", "SG"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true
+
+# SINGAPUR - Hub Regional
+- id: lazada-business-sg
+  name: "Lazada Business Singapore"
+  baseUrl: "https://www.lazada.sg/business"
+  country: "SG"
+  type: "marketplace_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "electronics_automation"
+  categories: ["electronics", "automation", "regional"]
+  shippingCountries: ["SG", "MY", "TH", "ID", "PH", "VN", "BN", "KH", "LA", "MM"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true
+
+- id: shopee-b2b-sg
+  name: "Shopee B2B Singapore"
+  baseUrl: "https://seller.shopee.sg/business"
+  country: "SG"
+  type: "b2b_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "electronics_components"
+  categories: ["electronics", "components", "oem"]
+  shippingCountries: ["SG", "MY", "TH", "ID", "PH", "VN"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true
+
+# MALASIA - Mercado Regional
+- id: lelong-business-my
+  name: "Lelong Business Malaysia"
+  baseUrl: "https://www.lelong.com.my/business"
+  country: "MY"
+  type: "marketplace_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "electronics_components"
+  categories: ["electronics", "components", "regional"]
+  shippingCountries: ["MY", "SG", "TH", "ID", "PH", "BN"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true
+
+# TAILANDIA - Mercado Regional
+- id: jd-central-th
+  name: "JD Central Thailand"
+  baseUrl: "https://www.jd.co.th/business"
+  country: "TH"
+  type: "marketplace_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "electronics_automation"
+  categories: ["electronics", "automation", "regional"]
+  shippingCountries: ["TH", "MY", "SG", "ID", "PH", "VN", "KH", "LA", "MM"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true
+
+# VIETNAM - Mercado Emergente
+- id: tiki-business-vn
+  name: "Tiki Business Vietnam"
+  baseUrl: "https://tiki.vn/business"
+  country: "VN"
+  type: "marketplace_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "electronics_components"
+  categories: ["electronics", "components", "regional"]
+  shippingCountries: ["VN", "TH", "MY", "SG", "ID", "PH", "KH", "LA"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true
+
+# INDONESIA - Mercado Emergente
+- id: tokopedia-b2b-id
+  name: "Tokopedia B2B Indonesia"
+  baseUrl: "https://www.tokopedia.com/business"
+  country: "ID"
+  type: "marketplace_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "industrial_supplies"
+  categories: ["industrial", "supplies", "electronics", "regional"]
+  shippingCountries: ["ID", "MY", "SG", "TH", "PH", "VN", "BN"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true
+
+# FILIPINAS - Mercado Regional
+- id: lazada-business-ph
+  name: "Lazada Business Philippines"
+  baseUrl: "https://www.lazada.com.ph/business"
+  country: "PH"
+  type: "marketplace_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "electronics_components"
+  categories: ["electronics", "components", "regional"]
+  shippingCountries: ["PH", "MY", "SG", "TH", "ID", "VN"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true
