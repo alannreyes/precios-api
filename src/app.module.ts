@@ -8,6 +8,9 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SourcesModule } from './sources/sources.module';
+import { ScrapingModule } from './scraping/scraping.module';
+import { SearchModule } from './search/search.module';
+import { AIModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -73,6 +76,9 @@ import { SourcesModule } from './sources/sources.module';
 
     // Módulos de funcionalidad
     SourcesModule,
+    ScrapingModule,
+    AIModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],
