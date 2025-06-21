@@ -2,6 +2,7 @@ import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { SourcesService } from './sources.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { logger } from '../config/logger.config';
+// import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 @Controller('sources')
 @UseGuards(AuthGuard)
@@ -461,5 +462,93 @@ export class SourcesController {
         retail_specialized: this.sourcesService.getRetailSpecializedSources().length,
       }
     };
+  }
+
+  // ====================================
+  // FASE 5: MERCADOS MANUFACTUREROS + ASIA
+  // ====================================
+
+  @Get('asian')
+  getAsianSources() {
+    return this.sourcesService.getAsianSources();
+  }
+
+  @Get('asian/by-country')
+  getAsianSourcesByCountry(@Query('country') country: string) {
+    return this.sourcesService.getAsianSourcesByCountry(country);
+  }
+
+  @Get('manufacturing')
+  getManufacturingMarketSources() {
+    return this.sourcesService.getManufacturingMarketSources();
+  }
+
+  @Get('asian/b2b')
+  getAsianB2BSources() {
+    return this.sourcesService.getAsianB2BSources();
+  }
+
+  @Get('oem-capable')
+  getOEMCapableSources() {
+    return this.sourcesService.getOEMCapableSources();
+  }
+
+  @Get('asian/regional-shipping')
+  getAsianRegionalShippingSources() {
+    return this.sourcesService.getAsianRegionalShippingSources();
+  }
+
+  @Get('manufacturing/by-specialization')
+  getSourcesByManufacturingSpecialization(@Query('specialization') specialization: string) {
+    return this.sourcesService.getSourcesByManufacturingSpecialization(specialization);
+  }
+
+  @Get('asian/best')
+  getBestAsianSources(@Query('limit') limit?: string) {
+    const limitNum = limit ? parseInt(limit, 10) : 10;
+    return this.sourcesService.getBestAsianSources(limitNum);
+  }
+
+  @Get('asian/multi-language')
+  getAsianMultiLanguageSources() {
+    return this.sourcesService.getAsianMultiLanguageSources();
+  }
+
+  @Get('asian/official')
+  getOfficialAsianSources() {
+    return this.sourcesService.getOfficialAsianSources();
+  }
+
+  @Get('regional-hubs')
+  getRegionalHubSources() {
+    return this.sourcesService.getRegionalHubSources();
+  }
+
+  @Get('asian/coverage-analysis')
+  getAsianCoverageAnalysis() {
+    return this.sourcesService.getAsianCoverageAnalysis();
+  }
+
+  @Get('asian/shipping-cost')
+  calculateAsianShippingCost(
+    @Query('fromCountry') fromCountry: string,
+    @Query('toCountry') toCountry: string,
+    @Query('weight') weight?: string
+  ) {
+    const weightNum = weight ? parseFloat(weight) : 1;
+    return this.sourcesService.calculateAsianShippingCost(fromCountry, toCountry, weightNum);
+  }
+
+  @Get('asian/product-recommendations')
+  getAsianProductRecommendations(
+    @Query('product') product: string,
+    @Query('targetCountry') targetCountry: string
+  ) {
+    return this.sourcesService.getAsianProductRecommendations(product, targetCountry);
+  }
+
+  @Get('phase5-stats')
+  getPhase5Stats() {
+    return this.sourcesService.getPhase5Stats();
   }
 } 

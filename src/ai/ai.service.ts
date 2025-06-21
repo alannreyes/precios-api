@@ -169,20 +169,44 @@ Responde en JSON:
     const searchLower = request.searchQuery.toLowerCase();
     const productLower = request.productName.toLowerCase();
     
+    logger.info(`Generando validación mock para:`, {
+      searchQuery: request.searchQuery,
+      productName: request.productName,
+      searchLower,
+      productLower,
+    });
+    
     // Validación básica sin IA
-    const hasCommonWords = searchLower.split(' ').some(word => 
-      word.length > 3 && productLower.includes(word)
-    );
+    const searchWords = searchLower.split(' ').filter(word => word.length > 3);
+    const hasCommonWords = searchWords.some(word => productLower.includes(word));
     
-    const confidenceScore = hasCommonWords ? 0.75 : 0.45;
+    logger.info(`Análisis de palabras detallado:`, {
+      searchWords,
+      hasCommonWords,
+      searchLower,
+      productLower,
+      wordAnalysis: searchWords.map(word => ({
+        word,
+        found: productLower.includes(word),
+        length: word.length
+      }))
+    });
     
-    return {
+    const confidenceScore = hasCommonWords ? 0.80 : 0.45;
+    
+    logger.info(`Confidence score calculado: ${confidenceScore} (${confidenceScore * 100}%)`);
+    
+    const result = {
       isExactMatch: confidenceScore > 0.7,
       confidenceScore,
       extractedBrand: request.brand,
       reasoning: 'Validación básica sin IA - basada en coincidencia de palabras clave',
-      aiProvider: 'mock',
+      aiProvider: 'mock' as const,
     };
+    
+    logger.info(`Resultado de validación:`, result);
+    
+    return result;
   }
 
   private extractModel(productText: string): string | undefined {
@@ -235,4 +259,4 @@ Responde en JSON:
       ],
     };
   }
-} 
+}

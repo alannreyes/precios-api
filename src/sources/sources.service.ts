@@ -10,7 +10,7 @@ export interface SourceConfig {
   name: string;
   baseUrl: string;
   country: string;
-  type: 'marketplace' | 'b2b_specialized' | 'direct_brand' | 'distributor' | 'brand_direct' | 'retail_specialized';
+  type: 'marketplace' | 'b2b_specialized' | 'direct_brand' | 'distributor' | 'brand_direct' | 'retail_specialized' | 'marketplace_asia' | 'b2b_asia';
   enabled: boolean;
   priority: number;
   isOfficial: boolean;
@@ -18,6 +18,9 @@ export interface SourceConfig {
   officialBrands?: string[];
   categories?: string[];
   shippingCountries?: string[];
+  capabilities?: string[];
+  languages?: string[];
+  currency?: string;
   scraperConfig: {
     selectors: {
       productName?: string;
@@ -711,5 +714,309 @@ export class SourcesService {
 
       return scoreB - scoreA;
     });
+  }
+
+  // ====================================
+  // FASE 5: MERCADOS MANUFACTUREROS + ASIA
+  // ====================================
+
+  /**
+   * Obtener todas las fuentes asiáticas
+   */
+  getAsianSources(): SourceConfig[] {
+    const asianCountries = ['CN', 'JP', 'KR', 'TW', 'SG', 'MY', 'TH', 'VN', 'ID', 'PH'];
+    return this.getActiveSources().filter(source => 
+      asianCountries.includes(source.country)
+    );
+  }
+
+  /**
+   * Obtener fuentes asiáticas por país
+   */
+  getAsianSourcesByCountry(country: string): SourceConfig[] {
+    const asianCountries = ['CN', 'JP', 'KR', 'TW', 'SG', 'MY', 'TH', 'VN', 'ID', 'PH'];
+    if (!asianCountries.includes(country.toUpperCase())) {
+      return [];
+    }
+    return this.getSourcesByCountry(country);
+  }
+
+  /**
+   * Obtener fuentes de mercados manufactureros
+   */
+  getManufacturingMarketSources(): SourceConfig[] {
+    return this.getActiveSources().filter(source => 
+      source.type === 'marketplace_asia' || 
+      source.type === 'b2b_asia' ||
+      source.specialization?.includes('manufacturing') ||
+      source.capabilities?.includes('manufacturer_direct') ||
+      source.capabilities?.includes('oem_products')
+    );
+  }
+
+  /**
+   * Obtener fuentes B2B asiáticas
+   */
+  getAsianB2BSources(): SourceConfig[] {
+    return this.getActiveSources().filter(source => 
+      source.type === 'b2b_asia' || 
+      (source.type === 'marketplace_asia' && source.capabilities?.includes('bulk_pricing'))
+    );
+  }
+
+  /**
+   * Obtener fuentes con capacidades OEM/ODM
+   */
+  getOEMCapableSources(): SourceConfig[] {
+    return this.getActiveSources().filter(source => 
+      source.capabilities?.includes('oem_products') ||
+      source.capabilities?.includes('oem_odm') ||
+      source.capabilities?.includes('custom_manufacturing')
+    );
+  }
+
+  /**
+   * Obtener fuentes con envío regional asiático
+   */
+  getAsianRegionalShippingSources(): SourceConfig[] {
+    return this.getActiveSources().filter(source => {
+      const asianCountries = ['CN', 'JP', 'KR', 'TW', 'SG', 'MY', 'TH', 'VN', 'ID', 'PH'];
+      return source.shippingCountries && 
+        source.shippingCountries.some(country => asianCountries.includes(country)) &&
+        source.shippingCountries.length >= 3; // Al menos 3 países asiáticos
+    });
+  }
+
+  /**
+   * Obtener fuentes por especialización manufacturera
+   */
+  getSourcesByManufacturingSpecialization(specialization: string): SourceConfig[] {
+    const manufacturingSpecs = [
+      'electronics_manufacturing',
+      'manufacturing_components', 
+      'electronics_automation',
+      'electronics_components',
+      'industrial_supplies',
+      'office_industrial'
+    ];
+    
+    if (!manufacturingSpecs.includes(specialization)) {
+      return [];
+    }
+    
+    return this.getActiveSources().filter(source => 
+      source.specialization === specialization
+    );
+  }
+
+  /**
+   * Obtener mejores fuentes asiáticas por score
+   */
+  getBestAsianSources(limit: number = 10): SourceConfig[] {
+    return this.getAsianSources()
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
+      .slice(0, limit);
+  }
+
+  /**
+   * Obtener fuentes con soporte multiidioma asiático
+   */
+  getAsianMultiLanguageSources(): SourceConfig[] {
+    return this.getAsianSources().filter(source => 
+      source.languages && source.languages.length >= 2
+    );
+  }
+
+  /**
+   * Obtener fuentes oficiales asiáticas
+   */
+  getOfficialAsianSources(): SourceConfig[] {
+    return this.getAsianSources().filter(source => source.isOfficial);
+  }
+
+  /**
+   * Obtener fuentes por hub regional (Singapur, Hong Kong)
+   */
+  getRegionalHubSources(): SourceConfig[] {
+    return this.getActiveSources().filter(source => 
+      ['SG', 'HK'].includes(source.country) ||
+      source.capabilities?.includes('regional_shipping')
+    );
+  }
+
+  /**
+   * Análisis de cobertura asiática
+   */
+  getAsianCoverageAnalysis(): any {
+    const asianSources = this.getAsianSources();
+    const countries = [...new Set(asianSources.map(s => s.country))];
+    const currencies = [...new Set(asianSources.map(s => s.currency))];
+    const languages = [...new Set(asianSources.flatMap(s => s.languages || []))];
+    
+    return {
+      totalSources: asianSources.length,
+      countries: countries.sort(),
+      currencies: currencies.sort(), 
+      languages: languages.sort(),
+      manufacturingSources: this.getManufacturingMarketSources().length,
+      b2bSources: this.getAsianB2BSources().length,
+      oemCapableSources: this.getOEMCapableSources().length,
+      regionalShippingSources: this.getAsianRegionalShippingSources().length,
+      averageScore: Math.round(asianSources.reduce((sum, s) => sum + (s.score || 0), 0) / asianSources.length),
+      topCountries: this.getTopAsianCountriesBySourceCount()
+    };
+  }
+
+  /**
+   * Obtener top países asiáticos por cantidad de fuentes
+   */
+  private getTopAsianCountriesBySourceCount(): any[] {
+    const asianSources = this.getAsianSources();
+    const countryCount = asianSources.reduce((acc, source) => {
+      acc[source.country] = (acc[source.country] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    return Object.entries(countryCount)
+      .map(([country, count]) => ({ country, count }))
+      .sort((a, b) => b.count - a.count);
+  }
+
+  /**
+   * Calcular costo estimado de envío asiático
+   */
+  calculateAsianShippingCost(fromCountry: string, toCountry: string, weight: number = 1): any {
+    const shippingRates = {
+      'CN': { base: 15, perKg: 8 },
+      'JP': { base: 25, perKg: 12 },
+      'KR': { base: 20, perKg: 10 },
+      'TW': { base: 18, perKg: 9 },
+      'SG': { base: 22, perKg: 11 },
+      'MY': { base: 16, perKg: 8 },
+      'TH': { base: 14, perKg: 7 },
+      'VN': { base: 12, perKg: 6 },
+      'ID': { base: 13, perKg: 7 },
+      'PH': { base: 15, perKg: 8 }
+    };
+    
+    const fromRate = shippingRates[fromCountry] || { base: 20, perKg: 10 };
+    const baseCost = fromRate.base + (fromRate.perKg * weight);
+    
+    // Factor de distancia regional
+    const regionalFactor = this.getRegionalShippingFactor(fromCountry, toCountry);
+    
+    return {
+      baseCost,
+      regionalFactor,
+      estimatedCost: Math.round(baseCost * regionalFactor),
+      currency: 'USD',
+      estimatedDays: this.getEstimatedShippingDays(fromCountry, toCountry)
+    };
+  }
+
+  /**
+   * Factor de envío regional
+   */
+  private getRegionalShippingFactor(from: string, to: string): number {
+    const regions = {
+      'northeast': ['CN', 'JP', 'KR', 'TW'],
+      'southeast': ['SG', 'MY', 'TH', 'VN', 'ID', 'PH']
+    };
+    
+    const fromRegion = Object.keys(regions).find(region => 
+      regions[region].includes(from)
+    );
+    const toRegion = Object.keys(regions).find(region => 
+      regions[region].includes(to)
+    );
+    
+    if (fromRegion === toRegion) return 1.0; // Misma región
+    if (fromRegion && toRegion) return 1.3; // Entre regiones asiáticas
+    return 1.8; // Fuera de Asia
+  }
+
+  /**
+   * Días estimados de envío
+   */
+  private getEstimatedShippingDays(from: string, to: string): string {
+    const factor = this.getRegionalShippingFactor(from, to);
+    if (factor === 1.0) return '3-5 días';
+    if (factor === 1.3) return '5-8 días';
+    return '10-15 días';
+  }
+
+  /**
+   * Recomendaciones inteligentes para productos asiáticos
+   */
+  getAsianProductRecommendations(product: string, targetCountry: string): any {
+    const asianSources = this.getAsianSources();
+    const manufacturingSources = this.getManufacturingMarketSources();
+    
+    // Lógica de recomendación basada en producto
+    let recommendedSources: SourceConfig[] = [];
+    
+    if (product.toLowerCase().includes('electronic') || 
+        product.toLowerCase().includes('component')) {
+      recommendedSources = asianSources.filter(s => 
+        s.specialization?.includes('electronics') ||
+        s.capabilities?.includes('electronics_components')
+      );
+    } else if (product.toLowerCase().includes('industrial') ||
+               product.toLowerCase().includes('automation')) {
+      recommendedSources = asianSources.filter(s => 
+        s.specialization?.includes('industrial') ||
+        s.capabilities?.includes('automation_systems')
+      );
+    } else {
+      recommendedSources = manufacturingSources;
+    }
+    
+    // Priorizar fuentes que envían al país objetivo
+    const shippingCapable = recommendedSources.filter(s => 
+      s.shippingCountries?.includes(targetCountry) || s.country === targetCountry
+    );
+    
+    return {
+      totalRecommended: recommendedSources.length,
+      shippingCapable: shippingCapable.length,
+             topRecommendations: shippingCapable
+         .sort((a, b) => (b.score || 0) - (a.score || 0))
+         .slice(0, 5)
+        .map(source => ({
+          id: source.id,
+          name: source.name,
+          country: source.country,
+          score: source.score,
+          specialization: source.specialization,
+          shippingCost: this.calculateAsianShippingCost(source.country, targetCountry),
+          capabilities: source.capabilities?.slice(0, 3) || []
+        }))
+    };
+  }
+
+  /**
+   * Estadísticas específicas de Fase 5
+   */
+  getPhase5Stats(): any {
+    const phase5Types = ['marketplace_asia', 'b2b_asia'];
+    const phase5Sources = this.getActiveSources().filter(source => 
+      phase5Types.includes(source.type)
+    );
+    
+    return {
+      phase: 5,
+      name: "Mercados Manufactureros + Asia",
+      totalSources: phase5Sources.length,
+      asianCoverage: this.getAsianCoverageAnalysis(),
+      manufacturingCapability: {
+        oemSources: this.getOEMCapableSources().length,
+        b2bSources: this.getAsianB2BSources().length,
+        regionalShipping: this.getAsianRegionalShippingSources().length
+      },
+             topPerformers: phase5Sources
+         .sort((a, b) => (b.score || 0) - (a.score || 0))
+         .slice(0, 5)
+        .map(s => ({ name: s.name, country: s.country, score: s.score }))
+    };
   }
 } 

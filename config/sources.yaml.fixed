@@ -574,96 +574,111 @@ additional_sources:
       waitTime: 3000
       useProxy: true
 
-  # ====================================
-  # FASE 5: MERCADOS MANUFACTUREROS + ASIA
-  # ====================================
-
-  # CHINA - Gigante E-commerce
-  - id: tmall-official-cn
-    name: "Tmall Official Stores"
-    baseUrl: "https://www.tmall.com"
-    country: "CN"
-    type: "marketplace_asia"
+  # =============================================================================
+  # MERCADOLIBRE - PAÍSES ADICIONALES
+  # =============================================================================
+  
+  - id: mercadolibre-ar
+    name: MercadoLibre Argentina
+    baseUrl: https://listado.mercadolibre.com.ar
+    country: AR
+    type: marketplace
     enabled: true
     priority: 1
     isOfficial: true
-    specialization: "electronics_manufacturing"
-    categories: ["electronics", "manufacturing", "components"]
-    shippingCountries: ["CN", "TW", "HK", "SG", "MY", "TH", "VN", "ID", "PH"]
+    officialBrands:
+      - Bosch
+      - 3M
+      - Makita
+      - DeWalt
+      - Stanley
+    categories:
+      - herramientas
+      - epp
+      - instrumentos
+      - construccion
+    shippingCountries:
+      - AR
+      - UY
     scraperConfig:
       selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
+        productName: .ui-search-item__title
+        price: .andes-money-amount__fraction
+        availability: .ui-search-item__stock-info
+        brand: .ui-search-item__brand-name
+        image: .ui-search-result-image__element img
+      waitTime: 2000
+      useProxy: true
+
+  - id: mercadolibre-cl
+    name: MercadoLibre Chile
+    baseUrl: https://listado.mercadolibre.cl
+    country: CL
+    type: marketplace
+    enabled: true
+    priority: 1
+    isOfficial: true
+    officialBrands:
+      - Bosch
+      - 3M
+      - Makita
+      - DeWalt
+      - Stanley
+    categories:
+      - herramientas
+      - epp
+      - instrumentos
+      - construccion
+    shippingCountries:
+      - CL
+      - PE
+    scraperConfig:
+      selectors:
+        productName: .ui-search-item__title
+        price: .andes-money-amount__fraction
+        availability: .ui-search-item__stock-info
+        brand: .ui-search-item__brand-name
+        image: .ui-search-result-image__element img
+      waitTime: 2000
+      useProxy: true
+
+  # =============================================================================
+  # AMAZON BUSINESS - PAÍSES ADICIONALES
+  # =============================================================================
+
+  - id: amazon-business-de
+    name: Amazon Business Germany
+    baseUrl: https://www.amazon.de
+    country: DE
+    type: marketplace
+    enabled: true
+    priority: 1
+    isOfficial: true
+    officialBrands:
+      - Bosch
+      - Würth
+      - Festo
+      - Hilti
+      - 3M
+    categories:
+      - tools
+      - safety
+      - instruments
+      - construction
+    shippingCountries:
+      - DE
+      - AT
+      - CH
+      - NL
+      - FR
+    scraperConfig:
+      selectors:
+        productName: '[data-cy="title-recipe-title"]'
+        price: .a-price-whole
+        availability: '#availability span'
+        brand: '#bylineInfo'
+        image: '#landingImage'
       waitTime: 3000
-      useProxy: true
-
-  # CHINA - B2B Marketplace
-  - id: alibaba-1688-cn
-    name: "1688.com B2B Marketplace"
-    baseUrl: "https://www.1688.com"
-    country: "CN"
-    type: "b2b_asia"
-    enabled: true
-    priority: 1
-    isOfficial: false
-    specialization: "manufacturing_components"
-    categories: ["manufacturing", "components", "oem", "bulk"]
-    shippingCountries: ["CN", "TW", "HK", "SG", "MY", "TH", "VN", "ID", "PH", "KR", "JP"]
-    scraperConfig:
-      selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 3000
-      useProxy: true
-
-  # JAPÓN - Especializado Industrial
-  - id: monotaro-jp
-    name: "MonotaRO Japan"
-    baseUrl: "https://www.monotaro.com"
-    country: "JP"
-    type: "b2b_asia"
-    enabled: true
-    priority: 1
-    isOfficial: false
-    specialization: "industrial_supplies"
-    categories: ["industrial", "supplies", "automation", "cad"]
-    shippingCountries: ["JP", "KR", "TW", "SG", "MY", "TH"]
-    scraperConfig:
-      selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 2500
-      useProxy: true
-
-  # SINGAPUR - Hub Regional
-  - id: lazada-business-sg
-    name: "Lazada Business Singapore"
-    baseUrl: "https://www.lazada.sg/business"
-    country: "SG"
-    type: "marketplace_asia"
-    enabled: true
-    priority: 1
-    isOfficial: false
-    specialization: "electronics_automation"
-    categories: ["electronics", "automation", "regional"]
-    shippingCountries: ["SG", "MY", "TH", "ID", "PH", "VN", "BN", "KH", "LA", "MM"]
-    scraperConfig:
-      selectors:
-        productName: '.product-title'
-        price: '.price'
-        availability: '.stock-info'
-        brand: '.brand-name'
-        image: '.product-image img'
-      waitTime: 2500
       useProxy: true
 
 # =============================================================================
@@ -1290,3 +1305,95 @@ b2b_config:
   enable_cad_file_detection: true
   minimum_order_quantity_detection: true
   lead_time_extraction: true
+
+# ====================================
+# FASE 5: MERCADOS MANUFACTUREROS + ASIA
+# Objetivo: Cobertura manufacturera Asia + Validación global
+# ====================================
+
+# CHINA - Gigantes E-commerce
+- id: tmall-official-cn
+  name: "Tmall Official Stores"
+  baseUrl: "https://www.tmall.com"
+  country: "CN"
+  type: "marketplace_asia"
+  enabled: true
+  priority: 1
+  isOfficial: true
+  specialization: "electronics_manufacturing"
+  categories: ["electronics", "manufacturing", "components"]
+  shippingCountries: ["CN", "TW", "HK", "SG", "MY", "TH", "VN", "ID", "PH"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 3000
+    useProxy: true
+
+- id: alibaba-1688-cn
+  name: "1688.com B2B Marketplace"
+  baseUrl: "https://www.1688.com"
+  country: "CN"
+  type: "b2b_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "manufacturing_components"
+  categories: ["manufacturing", "components", "oem", "bulk"]
+  shippingCountries: ["CN", "TW", "HK", "SG", "MY", "TH", "VN", "ID", "PH", "KR", "JP"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 3000
+    useProxy: true
+
+# JAPÓN - Mercados Especializados
+- id: monotaro-jp
+  name: "MonotaRO Japan"
+  baseUrl: "https://www.monotaro.com"
+  country: "JP"
+  type: "b2b_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "industrial_supplies"
+  categories: ["industrial", "supplies", "automation", "cad"]
+  shippingCountries: ["JP", "KR", "TW", "SG", "MY", "TH"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true
+
+# SINGAPUR - Hub Regional
+- id: lazada-business-sg
+  name: "Lazada Business Singapore"
+  baseUrl: "https://www.lazada.sg/business"
+  country: "SG"
+  type: "marketplace_asia"
+  enabled: true
+  priority: 1
+  isOfficial: false
+  specialization: "electronics_automation"
+  categories: ["electronics", "automation", "regional"]
+  shippingCountries: ["SG", "MY", "TH", "ID", "PH", "VN", "BN", "KH", "LA", "MM"]
+  scraperConfig:
+    selectors:
+      productName: '.product-title'
+      price: '.price'
+      availability: '.stock-info'
+      brand: '.brand-name'
+      image: '.product-image img'
+    waitTime: 2500
+    useProxy: true

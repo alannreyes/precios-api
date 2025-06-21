@@ -41,6 +41,8 @@ export class SearchController {
       maxResults: request.maxResults,
     });
 
+    logger.info('🔥 PRUEBA DE LOG - Este log debería aparecer en la consola');
+
     return await this.searchService.search(request);
   }
 

@@ -80,11 +80,62 @@ export class SearchService {
         isGlobalSearch,
       });
 
-      // Por ahora simulamos resultados ya que el scraping está en desarrollo
-      const mockResults = this.generateMockResults(sources, request);
+      // Realizar scraping real en todas las fuentes
+      const allResults: ScrapingResult[] = [];
+      
+      // Ejecutar scraping en paralelo para mejor rendimiento
+      const scrapingPromises = sources.map(async (source) => {
+        try {
+          logger.info(`🔍 Iniciando scraping en fuente: ${source.name}`, {
+            sourceId: source.id,
+            product: request.product,
+          });
+          
+          const searchQuery: SearchQuery = {
+            product: request.product,
+            country: source.country,
+            maxResults: request.maxResults || 10,
+            officialOnly: request.officialOnly || false,
+          };
+          
+          const sourceResults = await this.scrapingService.scrapeSource(source, searchQuery);
+          
+          logger.info(`✅ Scraping completado para ${source.name}: ${sourceResults.length} resultados`, {
+            sourceId: source.id,
+            resultCount: sourceResults.length,
+          });
+          
+          return sourceResults;
+        } catch (error) {
+          logger.error(`Error scrapeando ${source.name}`, {
+            sourceId: source.id,
+            error: error.message,
+          });
+          return [];
+        }
+      });
+
+      const scrapingResults = await Promise.all(scrapingPromises);
+      
+      // Combinar todos los resultados
+      scrapingResults.forEach(results => {
+        allResults.push(...results);
+      });
+
+      logger.info(`Scraping completado: ${allResults.length} productos encontrados`);
+
+      // Log detallado de los resultados antes de validación
+      allResults.forEach((result, index) => {
+        logger.info(`Resultado ${index + 1}:`, {
+          sourceId: result.sourceId,
+          productName: result.productName,
+          price: result.price,
+          confidenceScore: result.confidenceScore,
+        });
+      });
 
       // Validación IA de productos
-      const validatedResults = await this.validateResultsWithAI(mockResults, request);
+      const validatedResults = await this.validateResultsWithAI(allResults, request);
 
       // Filtrar y ordenar resultados
       let filteredResults = this.filterResults(validatedResults, request);
@@ -138,39 +189,6 @@ export class SearchService {
     }
   }
 
-  // Generar resultados mock para testing mientras implementamos scraping real
-  private generateMockResults(sources: any[], request: SearchRequest): ScrapingResult[] {
-    const mockResults: ScrapingResult[] = [];
-    
-    sources.forEach((source, index) => {
-      // Simular 1-3 productos por fuente
-      const productsCount = Math.floor(Math.random() * 3) + 1;
-      
-      for (let i = 0; i < productsCount; i++) {
-        const basePrice = 100 + Math.random() * 500;
-        const isOfficial = source.isOfficial && Math.random() > 0.3;
-        
-        mockResults.push({
-          sourceId: source.id,
-          sourceName: source.name,
-          productName: `${request.product} ${source.country} Modelo ${i + 1}`,
-          brand: isOfficial ? 'Bosch' : Math.random() > 0.5 ? 'Makita' : undefined,
-          price: Math.round(basePrice * 100) / 100,
-          currency: this.getCurrencyForCountry(source.country),
-          productUrl: `${source.baseUrl}/producto-${index}-${i}`,
-          imageUrl: `https://example.com/images/producto-${index}-${i}.jpg`,
-          availability: Math.random() > 0.1 ? 'in_stock' : 'limited',
-          isOfficialSource: isOfficial,
-          confidenceScore: Math.round(60 + Math.random() * 40),
-          responseTimeMs: Math.round(500 + Math.random() * 2000),
-          scrapedAt: new Date(),
-        });
-      }
-    });
-
-    return mockResults;
-  }
-
   private getCurrencyForCountry(country: string): string {
     const currencyMap: Record<string, string> = {
       'PE': 'PEN',
@@ -190,6 +208,8 @@ export class SearchService {
   private filterResults(results: ScrapingResult[], request: SearchRequest): ScrapingResult[] {
     let filtered = results;
 
+    logger.info(`Iniciando filtrado de ${results.length} resultados`);
+
     // Filtrar solo productos con datos válidos
     filtered = filtered.filter(result => 
       result.productName && 
@@ -197,20 +217,28 @@ export class SearchService {
       result.productUrl
     );
 
+    logger.info(`Después de filtro de datos válidos: ${filtered.length} resultados`);
+
     // Filtrar solo fuentes oficiales si se solicita
     if (request.officialOnly) {
       filtered = filtered.filter(result => result.isOfficialSource);
+      logger.info(`Después de filtro oficial: ${filtered.length} resultados`);
     }
 
-    // Filtrar por score de confianza mínimo
-    const minConfidence = this.configService.get('AI_CONFIDENCE_THRESHOLD', 0.7) * 100;
+    // Filtrar por score de confianza mínimo (ajustado para ser menos restrictivo)
+    const minConfidence = this.configService.get('AI_CONFIDENCE_THRESHOLD', 0.5) * 100; // Reducido de 0.7 a 0.5
     filtered = filtered.filter(result => result.confidenceScore >= minConfidence);
+    
+    logger.info(`Después de filtro de confianza mínima (${minConfidence}%): ${filtered.length} resultados`);
 
-    // Limitar resultados si no se solicitan alternativas
+    // Limitar resultados si no se solicitan alternativas (ajustado para ser menos restrictivo)
     if (!request.alternatives) {
-      // Solo matches exactos (score > 80)
-      filtered = filtered.filter(result => result.confidenceScore >= 80);
+      // Reducir umbral de 80% a 70% para matches exactos (más permisivo)
+      filtered = filtered.filter(result => result.confidenceScore >= 70);
+      logger.info(`Después de filtro de matches exactos (70%): ${filtered.length} resultados`);
     }
+
+    logger.info(`Filtrado completado: ${filtered.length} resultados finales`);
 
     return filtered;
   }
