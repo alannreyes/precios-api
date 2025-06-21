@@ -10,7 +10,7 @@ export interface SourceConfig {
   name: string;
   baseUrl: string;
   country: string;
-  type: 'marketplace' | 'b2b_specialized' | 'direct_brand' | 'distributor';
+  type: 'marketplace' | 'b2b_specialized' | 'direct_brand' | 'distributor' | 'brand_direct' | 'retail_specialized';
   enabled: boolean;
   priority: number;
   isOfficial: boolean;
@@ -30,6 +30,13 @@ export interface SourceConfig {
       datasheet?: string;
       cad_files?: string;
       cad_download?: string;
+      warranty?: string;
+      partNumber?: string;
+      software?: string;
+      calibration?: string;
+      msds?: string;
+      certifications?: string;
+      cad?: string;
     };
     waitTime?: number;
     useProxy?: boolean;
@@ -469,5 +476,240 @@ export class SourcesService {
     this.initializeDefaultSources();
     this.loadAdditionalSources();
     logger.info('Fuentes recargadas exitosamente');
+  }
+
+  // =============================================================================
+  // NUEVOS MÉTODOS PARA FASE 4: TIENDAS DIRECTAS + EXPANSIÓN EUROPEA
+  // =============================================================================
+
+  // Obtener tiendas directas de marca
+  getBrandDirectSources(): SourceConfig[] {
+    return this.getActiveSources().filter(source => source.type === 'brand_direct');
+  }
+
+  // Obtener tiendas directas por marca específica
+  getBrandDirectSourcesByBrand(brand: string): SourceConfig[] {
+    return this.getBrandDirectSources().filter(source =>
+      source.officialBrands && source.officialBrands.some(b => 
+        b.toLowerCase().includes(brand.toLowerCase())
+      )
+    );
+  }
+
+  // Obtener fuentes con capacidades específicas de marca
+  getBrandSourcesWithCapability(capability: string): SourceConfig[] {
+    const capabilityMap = {
+      'warranty_info': (source: SourceConfig) => !!source.scraperConfig.selectors.warranty,
+      'official_parts': (source: SourceConfig) => !!source.scraperConfig.selectors.partNumber,
+      'service_centers': (source: SourceConfig) => source.type === 'brand_direct',
+      'training_materials': (source: SourceConfig) => source.type === 'brand_direct',
+      'software_downloads': (source: SourceConfig) => !!source.scraperConfig.selectors.software,
+      'calibration_certificates': (source: SourceConfig) => !!source.scraperConfig.selectors.calibration,
+      'msds_sheets': (source: SourceConfig) => !!source.scraperConfig.selectors.msds,
+      'certification_docs': (source: SourceConfig) => !!source.scraperConfig.selectors.certifications,
+      'cad_drawings': (source: SourceConfig) => !!source.scraperConfig.selectors.cad,
+      'calculation_software': (source: SourceConfig) => !!source.scraperConfig.selectors.software,
+    };
+
+    const checkCapability = capabilityMap[capability];
+    if (!checkCapability) return [];
+
+    return this.getBrandDirectSources().filter(checkCapability);
+  }
+
+  // Obtener fuentes europeas por país
+  getEuropeanSourcesByCountry(country: string): SourceConfig[] {
+    const europeanCountries = ['ES', 'IT', 'FR', 'NL', 'DE', 'AT', 'CH', 'BE', 'LU', 'PT'];
+    
+    if (!europeanCountries.includes(country)) {
+      return [];
+    }
+
+    return this.getSourcesByCountry(country);
+  }
+
+  // Obtener todas las fuentes europeas
+  getAllEuropeanSources(): SourceConfig[] {
+    const europeanCountries = ['ES', 'IT', 'FR', 'NL', 'DE', 'AT', 'CH', 'BE', 'LU', 'PT'];
+    
+    return this.getActiveSources().filter(source =>
+      europeanCountries.includes(source.country) ||
+      (source.shippingCountries && source.shippingCountries.some(c => europeanCountries.includes(c)))
+    );
+  }
+
+  // Obtener fuentes retail especializadas
+  getRetailSpecializedSources(): SourceConfig[] {
+    return this.getActiveSources().filter(source => source.type === 'retail_specialized');
+  }
+
+  // Obtener fuentes retail por país europeo
+  getRetailSourcesByEuropeanCountry(country: string): SourceConfig[] {
+    return this.getRetailSpecializedSources().filter(source =>
+      source.country === country ||
+      (source.shippingCountries && source.shippingCountries.includes(country))
+    );
+  }
+
+  // Obtener mejores fuentes por región europea
+  getBestSourcesByEuropeanRegion(countries: string[]): SourceConfig[] {
+    const sources = this.getActiveSources().filter(source =>
+      countries.includes(source.country) ||
+      (source.shippingCountries && source.shippingCountries.some(c => countries.includes(c)))
+    );
+
+    return sources.sort((a, b) => {
+      // Priorizar fuentes oficiales y B2B especializadas
+      const scoreA = (a.score || 1.0) + 
+                    (a.isOfficial ? 0.3 : 0) + 
+                    (a.type === 'b2b_specialized' ? 0.2 : 0) +
+                    (a.type === 'brand_direct' ? 0.25 : 0) +
+                    (a.priority === 1 ? 0.15 : 0);
+      
+      const scoreB = (b.score || 1.0) + 
+                    (b.isOfficial ? 0.3 : 0) + 
+                    (b.type === 'b2b_specialized' ? 0.2 : 0) +
+                    (b.type === 'brand_direct' ? 0.25 : 0) +
+                    (b.priority === 1 ? 0.15 : 0);
+      
+      return scoreB - scoreA;
+    });
+  }
+
+  // Obtener fuentes con soporte multiidioma
+  getMultiLanguageSources(): SourceConfig[] {
+    return this.getAllEuropeanSources().filter(source => {
+      // Fuentes que típicamente soportan múltiples idiomas
+      const multiLangSources = [
+        'bosch-professional-global',
+        'hilti-direct-global',
+        'conrad-',
+        'rs-components-',
+        'wurth-',
+        'rexel-'
+      ];
+      
+      return multiLangSources.some(prefix => source.id.startsWith(prefix));
+    });
+  }
+
+  // Obtener fuentes con envío internacional
+  getInternationalShippingSources(): SourceConfig[] {
+    return this.getActiveSources().filter(source =>
+      source.shippingCountries && source.shippingCountries.length > 2
+    );
+  }
+
+  // Obtener estadísticas de la Fase 4
+  getPhase4Stats() {
+    const brandDirectSources = this.getBrandDirectSources();
+    const europeanSources = this.getAllEuropeanSources();
+    const retailSources = this.getRetailSpecializedSources();
+
+    const brandDirectByCountry = brandDirectSources.reduce((acc, source) => {
+      acc[source.country] = (acc[source.country] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const europeanByCountry = europeanSources.reduce((acc, source) => {
+      acc[source.country] = (acc[source.country] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const brandDirectBySpecialization = brandDirectSources.reduce((acc, source) => {
+      if (source.specialization) {
+        acc[source.specialization] = (acc[source.specialization] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    return {
+      brandDirect: {
+        total: brandDirectSources.length,
+        byCountry: brandDirectByCountry,
+        bySpecialization: brandDirectBySpecialization,
+        capabilities: {
+          warrantyInfo: this.getBrandSourcesWithCapability('warranty_info').length,
+          officialParts: this.getBrandSourcesWithCapability('official_parts').length,
+          serviceCenters: this.getBrandSourcesWithCapability('service_centers').length,
+          trainingMaterials: this.getBrandSourcesWithCapability('training_materials').length,
+          softwareDownloads: this.getBrandSourcesWithCapability('software_downloads').length,
+          calibrationCerts: this.getBrandSourcesWithCapability('calibration_certificates').length,
+          msdsSheets: this.getBrandSourcesWithCapability('msds_sheets').length,
+          certificationDocs: this.getBrandSourcesWithCapability('certification_docs').length,
+          cadDrawings: this.getBrandSourcesWithCapability('cad_drawings').length,
+        }
+      },
+      european: {
+        total: europeanSources.length,
+        byCountry: europeanByCountry,
+        retail: retailSources.length,
+        multiLanguage: this.getMultiLanguageSources().length,
+        internationalShipping: this.getInternationalShippingSources().length,
+      }
+    };
+  }
+
+  // Obtener fuentes recomendadas para un producto específico
+  getRecommendedSourcesForProduct(productType: string, country?: string, brand?: string): SourceConfig[] {
+    let sources = this.getActiveSources();
+
+    // Filtrar por país si se especifica
+    if (country) {
+      sources = sources.filter(source =>
+        source.country === country ||
+        (source.shippingCountries && source.shippingCountries.includes(country))
+      );
+    }
+
+    // Filtrar por marca si se especifica
+    if (brand) {
+      sources = sources.filter(source =>
+        !source.officialBrands || source.officialBrands.some(b => 
+          b.toLowerCase().includes(brand.toLowerCase())
+        )
+      );
+    }
+
+    // Mapeo de tipos de producto a especializaciones
+    const productSpecializationMap: Record<string, string[]> = {
+      'power_tools': ['power_tools', 'construction_tools'],
+      'hand_tools': ['power_tools', 'construction_tools', 'professional_tools'],
+      'measuring_tools': ['test_measurement', 'electronics_automation'],
+      'safety_equipment': ['ppe_industrial', 'ppe_tools'],
+      'electrical_tools': ['electrical_tools', 'electronics_automation'],
+      'industrial_supplies': ['industrial_supplies', 'fasteners_tools'],
+      'electronics': ['electronics_automation', 'electronics'],
+      'construction': ['construction_tools', 'fasteners_tools'],
+    };
+
+    const relevantSpecializations = productSpecializationMap[productType] || [];
+
+    // Priorizar fuentes relevantes
+    return sources.sort((a, b) => {
+      let scoreA = a.score || 1.0;
+      let scoreB = b.score || 1.0;
+
+      // Bonus por tipo de fuente
+      if (a.type === 'brand_direct') scoreA += 0.3;
+      if (b.type === 'brand_direct') scoreB += 0.3;
+      
+      if (a.type === 'b2b_specialized') scoreA += 0.2;
+      if (b.type === 'b2b_specialized') scoreB += 0.2;
+
+      // Bonus por especialización relevante
+      if (a.specialization && relevantSpecializations.includes(a.specialization)) scoreA += 0.25;
+      if (b.specialization && relevantSpecializations.includes(b.specialization)) scoreB += 0.25;
+
+      // Bonus por fuente oficial
+      if (a.isOfficial) scoreA += 0.15;
+      if (b.isOfficial) scoreB += 0.15;
+
+      // Bonus por prioridad
+      if (a.priority === 1) scoreA += 0.1;
+      if (b.priority === 1) scoreB += 0.1;
+
+      return scoreB - scoreA;
+    });
   }
 } 

@@ -226,4 +226,240 @@ export class SourcesController {
       };
     }
   }
+
+  // =============================================================================
+  // NUEVOS ENDPOINTS PARA FASE 4: TIENDAS DIRECTAS + EXPANSIÓN EUROPEA
+  // =============================================================================
+
+  @Get('brand-direct')
+  getBrandDirectSources() {
+    logger.info('Consultando tiendas directas de marca');
+    const sources = this.sourcesService.getBrandDirectSources();
+    
+    return {
+      sources,
+      total: sources.length,
+      brands: [...new Set(sources.flatMap(s => s.officialBrands || []))],
+      specializations: [...new Set(sources.map(s => s.specialization).filter(Boolean))],
+    };
+  }
+
+  @Get('brand-direct/by-brand')
+  getBrandDirectSourcesByBrand(@Query('brand') brand: string) {
+    if (!brand) {
+      return { error: 'Marca requerida' };
+    }
+
+    logger.info(`Consultando tiendas directas para marca: ${brand}`);
+    const sources = this.sourcesService.getBrandDirectSourcesByBrand(brand);
+    
+    return {
+      brand,
+      sources,
+      total: sources.length,
+    };
+  }
+
+  @Get('brand-direct/capabilities')
+  getBrandSourcesWithCapability(@Query('capability') capability: string) {
+    if (!capability) {
+      return { 
+        error: 'Capacidad requerida',
+        availableCapabilities: [
+          'warranty_info', 'official_parts', 'service_centers', 'training_materials',
+          'software_downloads', 'calibration_certificates', 'msds_sheets', 
+          'certification_docs', 'cad_drawings', 'calculation_software'
+        ]
+      };
+    }
+
+    logger.info(`Consultando tiendas directas con capacidad: ${capability}`);
+    const sources = this.sourcesService.getBrandSourcesWithCapability(capability);
+    
+    return {
+      capability,
+      sources,
+      total: sources.length,
+    };
+  }
+
+  @Get('european')
+  getAllEuropeanSources() {
+    logger.info('Consultando todas las fuentes europeas');
+    const sources = this.sourcesService.getAllEuropeanSources();
+    
+    return {
+      sources,
+      total: sources.length,
+      countries: [...new Set(sources.map(s => s.country))],
+      types: [...new Set(sources.map(s => s.type))],
+    };
+  }
+
+  @Get('european/by-country')
+  getEuropeanSourcesByCountry(@Query('country') country: string) {
+    if (!country) {
+      return { error: 'País europeo requerido (ES, IT, FR, NL, DE, AT, CH, BE, LU, PT)' };
+    }
+
+    logger.info(`Consultando fuentes europeas para: ${country}`);
+    const sources = this.sourcesService.getEuropeanSourcesByCountry(country);
+    
+    return {
+      country,
+      sources,
+      total: sources.length,
+      types: [...new Set(sources.map(s => s.type))],
+    };
+  }
+
+  @Get('retail-specialized')
+  getRetailSpecializedSources() {
+    logger.info('Consultando fuentes retail especializadas');
+    const sources = this.sourcesService.getRetailSpecializedSources();
+    
+    return {
+      sources,
+      total: sources.length,
+      countries: [...new Set(sources.map(s => s.country))],
+      specializations: [...new Set(sources.map(s => s.specialization).filter(Boolean))],
+    };
+  }
+
+  @Get('retail-specialized/by-country')
+  getRetailSourcesByEuropeanCountry(@Query('country') country: string) {
+    if (!country) {
+      return { error: 'País europeo requerido' };
+    }
+
+    logger.info(`Consultando fuentes retail para: ${country}`);
+    const sources = this.sourcesService.getRetailSourcesByEuropeanCountry(country);
+    
+    return {
+      country,
+      sources,
+      total: sources.length,
+    };
+  }
+
+  @Get('european/best-by-region')
+  getBestSourcesByEuropeanRegion(@Query('countries') countries: string) {
+    if (!countries) {
+      return { error: 'Lista de países requerida (ej: ES,IT,FR)' };
+    }
+
+    const countryList = countries.split(',').map(c => c.trim());
+    logger.info(`Consultando mejores fuentes para región europea: ${countryList.join(', ')}`);
+    
+    const sources = this.sourcesService.getBestSourcesByEuropeanRegion(countryList);
+    
+    return {
+      region: countryList,
+      sources,
+      total: sources.length,
+      recommendation: sources.length > 0 ? sources[0] : null,
+    };
+  }
+
+  @Get('multi-language')
+  getMultiLanguageSources() {
+    logger.info('Consultando fuentes con soporte multiidioma');
+    const sources = this.sourcesService.getMultiLanguageSources();
+    
+    return {
+      sources,
+      total: sources.length,
+      countries: [...new Set(sources.map(s => s.country))],
+    };
+  }
+
+  @Get('international-shipping')
+  getInternationalShippingSources() {
+    logger.info('Consultando fuentes con envío internacional');
+    const sources = this.sourcesService.getInternationalShippingSources();
+    
+    return {
+      sources,
+      total: sources.length,
+      averageShippingCountries: sources.reduce((sum, s) => sum + (s.shippingCountries?.length || 0), 0) / sources.length,
+    };
+  }
+
+  @Get('phase4-stats')
+  getPhase4Stats() {
+    logger.info('Consultando estadísticas de la Fase 4');
+    const stats = this.sourcesService.getPhase4Stats();
+    
+    return {
+      timestamp: new Date().toISOString(),
+      phase: 4,
+      description: 'Tiendas Directas de Marca + Expansión Europea',
+      ...stats,
+    };
+  }
+
+  @Get('recommendations')
+  getRecommendedSourcesForProduct(
+    @Query('productType') productType: string,
+    @Query('country') country?: string,
+    @Query('brand') brand?: string
+  ) {
+    if (!productType) {
+      return { 
+        error: 'Tipo de producto requerido',
+        availableTypes: [
+          'power_tools', 'hand_tools', 'measuring_tools', 'safety_equipment',
+          'electrical_tools', 'industrial_supplies', 'electronics', 'construction'
+        ]
+      };
+    }
+
+    logger.info(`Consultando fuentes recomendadas para producto: ${productType}`, {
+      productType,
+      country,
+      brand,
+    });
+    
+    const sources = this.sourcesService.getRecommendedSourcesForProduct(productType, country, brand);
+    
+    return {
+      productType,
+      country,
+      brand,
+      sources: sources.slice(0, 10), // Top 10 recomendaciones
+      total: sources.length,
+      topRecommendation: sources.length > 0 ? sources[0] : null,
+    };
+  }
+
+  @Get('complete-stats')
+  getCompleteStats() {
+    logger.info('Consultando estadísticas completas del sistema');
+    const basicStats = this.sourcesService.getSourcesStats();
+    const phase4Stats = this.sourcesService.getPhase4Stats();
+    const allSources = this.sourcesService.getActiveSources();
+    
+    return {
+      timestamp: new Date().toISOString(),
+      system: {
+        version: '1.0.0',
+        phase: 4,
+        description: 'Sistema completo con Fase 4 implementada',
+      },
+      overview: basicStats,
+      phase4: phase4Stats,
+      coverage: {
+        totalCountries: [...new Set(allSources.map(s => s.country))].length,
+        totalBrands: [...new Set(allSources.flatMap(s => s.officialBrands || []))].length,
+        totalSpecializations: [...new Set(allSources.map(s => s.specialization).filter(Boolean))].length,
+        globalShipping: this.sourcesService.getInternationalShippingSources().length,
+      },
+      types: {
+        marketplace: this.sourcesService.getSourcesByType('marketplace').length,
+        b2b_specialized: this.sourcesService.getB2BSpecializedSources().length,
+        brand_direct: this.sourcesService.getBrandDirectSources().length,
+        retail_specialized: this.sourcesService.getRetailSpecializedSources().length,
+      }
+    };
+  }
 } 

@@ -1,0 +1,570 @@
+{
+  "info": {
+    "name": "API de Búsqueda de Precios - Colección Completa",
+    "description": "Colección completa para probar todos los endpoints de la API de búsqueda de precios industriales. Incluye Fase 1, 2 y 3 implementadas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🏠 Estado y Salud",
+      "item": [
+        {
+          "name": "Página Principal",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          }
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Status del Sistema",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏪 Gestión de Fuentes",
+      "item": [
+        {
+          "name": "Listar Todas las Fuentes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources"]
+            }
+          }
+        },
+        {
+          "name": "Estadísticas de Fuentes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Fuentes por País - US",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/by-country?country=US",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "by-country"],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "US"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fuentes por País - DE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/by-country?country=DE",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "by-country"],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "DE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fuentes por País - PE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/by-country?country=PE",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "by-country"],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "PE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fuentes por Tipo - B2B",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/by-type?type=b2b_specialized",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "by-type"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "b2b_specialized"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fuentes por Tipo - Marketplace",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/by-type?type=marketplace",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "by-type"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "marketplace"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fuentes Oficiales",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/official",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "official"]
+            }
+          }
+        },
+        {
+          "name": "Fuentes Globales",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/global",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "global"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔧 Fuentes B2B Especializadas (Fase 3)",
+      "item": [
+        {
+          "name": "Listar Fuentes B2B",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/b2b",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "b2b"]
+            }
+          }
+        },
+        {
+          "name": "Por Especialización - Electronics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/by-specialization?specialization=electronics_automation",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "by-specialization"],
+              "query": [
+                {
+                  "key": "specialization",
+                  "value": "electronics_automation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Por Especialización - Industrial",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/by-specialization?specialization=industrial_supplies",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "by-specialization"],
+              "query": [
+                {
+                  "key": "specialization",
+                  "value": "industrial_supplies"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Con Especificaciones Técnicas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/with-technical-specs",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "with-technical-specs"]
+            }
+          }
+        },
+        {
+          "name": "Por Marca - Bosch",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/by-brand?brand=Bosch",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "by-brand"],
+              "query": [
+                {
+                  "key": "brand",
+                  "value": "Bosch"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Por Marca - Fluke",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/by-brand?brand=Fluke",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "by-brand"],
+              "query": [
+                {
+                  "key": "brand",
+                  "value": "Fluke"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Con Capacidad - Datasheet",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/with-capability?capability=datasheet",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "with-capability"],
+              "query": [
+                {
+                  "key": "capability",
+                  "value": "datasheet"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Con Capacidad - CAD Files",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/with-capability?capability=cad_files",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "with-capability"],
+              "query": [
+                {
+                  "key": "capability",
+                  "value": "cad_files"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mejores B2B - US Electronics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/best-b2b?country=US&specialization=electronics_automation",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "best-b2b"],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "US"
+                },
+                {
+                  "key": "specialization",
+                  "value": "electronics_automation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mejores B2B - DE Industrial",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/best-b2b?country=DE&specialization=industrial_supplies",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "best-b2b"],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "DE"
+                },
+                {
+                  "key": "specialization",
+                  "value": "industrial_supplies"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Configuración B2B",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/b2b-config",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "b2b-config"]
+            }
+          }
+        },
+        {
+          "name": "Recargar Fuentes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sources/reload",
+              "host": ["{{baseUrl}}"],
+              "path": ["sources", "reload"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔍 Búsquedas de Productos",
+      "item": [
+        {
+          "name": "Búsqueda Local - Taladro Bosch PE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search?product=taladro bosch&country=PE&maxResults=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["search"],
+              "query": [
+                {
+                  "key": "product",
+                  "value": "taladro bosch"
+                },
+                {
+                  "key": "country",
+                  "value": "PE"
+                },
+                {
+                  "key": "maxResults",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Búsqueda Local - Multímetro US",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search?product=multimetro fluke&country=US&maxResults=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["search"],
+              "query": [
+                {
+                  "key": "product",
+                  "value": "multimetro fluke"
+                },
+                {
+                  "key": "country",
+                  "value": "US"
+                },
+                {
+                  "key": "maxResults",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Búsqueda Global - Multímetro Fluke",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search/global?product=multimetro fluke&countries=US,DE,UK&maxResults=15",
+              "host": ["{{baseUrl}}"],
+              "path": ["search", "global"],
+              "query": [
+                {
+                  "key": "product",
+                  "value": "multimetro fluke"
+                },
+                {
+                  "key": "countries",
+                  "value": "US,DE,UK"
+                },
+                {
+                  "key": "maxResults",
+                  "value": "15"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Búsqueda Global - Herramientas Bosch",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search/global?product=taladro bosch&countries=PE,US,MX&maxResults=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["search", "global"],
+              "query": [
+                {
+                  "key": "product",
+                  "value": "taladro bosch"
+                },
+                {
+                  "key": "countries",
+                  "value": "PE,US,MX"
+                },
+                {
+                  "key": "maxResults",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Búsqueda Global - Equipos 3M",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search/global?product=casco 3M&countries=US,DE,PE&maxResults=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["search", "global"],
+              "query": [
+                {
+                  "key": "product",
+                  "value": "casco 3M"
+                },
+                {
+                  "key": "countries",
+                  "value": "US,DE,PE"
+                },
+                {
+                  "key": "maxResults",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Búsqueda de Prueba",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search/test",
+              "host": ["{{baseUrl}}"],
+              "path": ["search", "test"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤖 Sistema de IA",
+      "item": [
+        {
+          "name": "Estado del Sistema IA",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search/ai-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["search", "ai-status"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+} 

@@ -682,6 +682,592 @@ additional_sources:
       useProxy: true
 
 # =============================================================================
+# FASE 4: TIENDAS DIRECTAS DE MARCA (Semanas 16-17)
+# =============================================================================
+
+  # Bosch Professional Store
+  - id: bosch-professional-global
+    name: Bosch Professional Store
+    baseUrl: https://www.bosch-professional.com
+    country: DE
+    type: brand_direct
+    enabled: true
+    priority: 2
+    isOfficial: true
+    specialization: power_tools
+    officialBrands:
+      - Bosch Professional
+      - Bosch Blue
+    categories:
+      - power_tools
+      - hand_tools
+      - measuring_tools
+      - accessories
+      - safety
+    capabilities:
+      - technical_specifications
+      - warranty_info
+      - official_parts
+      - service_centers
+    shippingCountries:
+      - DE
+      - AT
+      - CH
+      - FR
+      - IT
+      - ES
+      - NL
+      - BE
+      - PL
+      - CZ
+      - UK
+      - US
+    scraperConfig:
+      selectors:
+        productName: '.product-title'
+        price: '.price-current'
+        availability: '.availability-status'
+        brand: '.brand-logo'
+        image: '.product-image img'
+        specifications: '.technical-data'
+        warranty: '.warranty-info'
+        partNumber: '.product-number'
+      waitTime: 2500
+      useProxy: true
+
+  # 3M Direct Store
+  - id: 3m-direct-us
+    name: 3M Direct Store
+    baseUrl: https://www.3m.com
+    country: US
+    type: brand_direct
+    enabled: true
+    priority: 2
+    isOfficial: true
+    specialization: ppe_industrial
+    officialBrands:
+      - 3M
+      - Scotch
+      - Post-it
+      - Peltor
+    categories:
+      - safety
+      - ppe
+      - adhesives
+      - abrasives
+      - filtration
+    capabilities:
+      - technical_specifications
+      - msds_sheets
+      - certification_docs
+      - bulk_pricing
+    shippingCountries:
+      - US
+      - CA
+      - MX
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-display'
+        availability: '.stock-status'
+        brand: '.brand-name'
+        image: '.product-hero-image img'
+        specifications: '.product-specifications'
+        msds: '.msds-link'
+        certifications: '.certifications'
+      waitTime: 3000
+      useProxy: true
+
+  # Fluke Official Store
+  - id: fluke-direct-us
+    name: Fluke Direct Store
+    baseUrl: https://www.fluke.com
+    country: US
+    type: brand_direct
+    enabled: true
+    priority: 2
+    isOfficial: true
+    specialization: test_measurement
+    officialBrands:
+      - Fluke
+      - Fluke Networks
+      - Fluke Biomedical
+    categories:
+      - multimeters
+      - thermal_imaging
+      - calibration
+      - network_testing
+      - biomedical
+    capabilities:
+      - technical_specifications
+      - calibration_certificates
+      - training_materials
+      - software_downloads
+    shippingCountries:
+      - US
+      - CA
+      - Global
+    scraperConfig:
+      selectors:
+        productName: '.product-title'
+        price: '.price-amount'
+        availability: '.availability-text'
+        brand: '.brand-header'
+        image: '.product-image-primary img'
+        specifications: '.specifications-table'
+        calibration: '.calibration-info'
+        software: '.software-downloads'
+      waitTime: 2500
+      useProxy: true
+
+  # Milwaukee Tool Direct
+  - id: milwaukee-direct-us
+    name: Milwaukee Tool Direct
+    baseUrl: https://www.milwaukeetool.com
+    country: US
+    type: brand_direct
+    enabled: true
+    priority: 2
+    isOfficial: true
+    specialization: power_tools
+    officialBrands:
+      - Milwaukee
+      - M18
+      - M12
+      - MX FUEL
+    categories:
+      - power_tools
+      - hand_tools
+      - storage
+      - lighting
+      - safety
+    capabilities:
+      - technical_specifications
+      - battery_compatibility
+      - warranty_registration
+      - service_centers
+    shippingCountries:
+      - US
+      - CA
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-current'
+        availability: '.stock-indicator'
+        brand: '.brand-milwaukee'
+        image: '.product-image img'
+        specifications: '.product-specs'
+        compatibility: '.compatibility-chart'
+        warranty: '.warranty-details'
+      waitTime: 2000
+      useProxy: true
+
+  # Klein Tools Direct
+  - id: klein-tools-direct-us
+    name: Klein Tools Direct
+    baseUrl: https://www.kleintools.com
+    country: US
+    type: brand_direct
+    enabled: true
+    priority: 2
+    isOfficial: true
+    specialization: electrical_tools
+    officialBrands:
+      - Klein Tools
+      - Klein
+    categories:
+      - electrical_tools
+      - hand_tools
+      - test_equipment
+      - safety
+      - bags_cases
+    capabilities:
+      - technical_specifications
+      - electrical_ratings
+      - safety_certifications
+      - instructional_videos
+    shippingCountries:
+      - US
+      - CA
+      - MX
+    scraperConfig:
+      selectors:
+        productName: '.product-title'
+        price: '.price-value'
+        availability: '.availability-status'
+        brand: '.klein-brand'
+        image: '.product-gallery img'
+        specifications: '.product-details'
+        ratings: '.electrical-ratings'
+        certifications: '.safety-certs'
+      waitTime: 2500
+      useProxy: true
+
+  # Hilti Direct Store
+  - id: hilti-direct-global
+    name: Hilti Direct Store
+    baseUrl: https://www.hilti.com
+    country: DE
+    type: brand_direct
+    enabled: true
+    priority: 2
+    isOfficial: true
+    specialization: construction_tools
+    officialBrands:
+      - Hilti
+    categories:
+      - drilling_demolition
+      - anchoring_fastening
+      - cutting_sanding
+      - measuring
+      - safety
+    capabilities:
+      - technical_specifications
+      - cad_drawings
+      - calculation_software
+      - service_contracts
+    shippingCountries:
+      - Global
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-display'
+        availability: '.stock-info'
+        brand: '.hilti-brand'
+        image: '.product-image img'
+        specifications: '.tech-specs'
+        cad: '.cad-downloads'
+        software: '.calculation-tools'
+      waitTime: 3000
+      useProxy: true
+
+# =============================================================================
+# FASE 4: EXPANSIÓN EUROPEA COMPLETA (Semanas 18-19)
+# =============================================================================
+
+  # España - Leroy Merlin
+  - id: leroy-merlin-es
+    name: Leroy Merlin España
+    baseUrl: https://www.leroymerlin.es
+    country: ES
+    type: retail_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: construction_tools
+    officialBrands:
+      - Bosch
+      - Makita
+      - DeWalt
+      - Stanley
+      - Black & Decker
+    categories:
+      - herramientas
+      - construccion
+      - jardin
+      - electricidad
+      - fontaneria
+    shippingCountries:
+      - ES
+      - PT
+      - AD
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-current'
+        availability: '.stock-status'
+        brand: '.brand-name'
+        image: '.product-image img'
+        specifications: '.product-features'
+      waitTime: 2000
+      useProxy: true
+
+  # España - Bricomart
+  - id: bricomart-es
+    name: Bricomart España
+    baseUrl: https://www.bricomart.es
+    country: ES
+    type: retail_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: construction_tools
+    officialBrands:
+      - Bosch
+      - Makita
+      - Milwaukee
+      - Festool
+    categories:
+      - herramientas
+      - construccion
+      - electricidad
+      - fontaneria
+    shippingCountries:
+      - ES
+    scraperConfig:
+      selectors:
+        productName: '.product-title'
+        price: '.price-value'
+        availability: '.availability-info'
+        brand: '.manufacturer'
+        image: '.product-photo img'
+        specifications: '.technical-info'
+      waitTime: 2500
+      useProxy: true
+
+  # Italia - Würth Italia
+  - id: wurth-italia-it
+    name: Würth Italia
+    baseUrl: https://www.wurth.it
+    country: IT
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: true
+    specialization: fasteners_tools
+    officialBrands:
+      - Würth
+    categories:
+      - fissaggi
+      - utensili
+      - chimica
+      - abbigliamento
+      - sicurezza
+    capabilities:
+      - technical_specifications
+      - bulk_pricing
+      - cad_files
+      - technical_support
+    shippingCountries:
+      - IT
+      - CH
+      - SM
+      - VA
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-current'
+        availability: '.stock-status'
+        brand: '.brand-wurth'
+        image: '.product-image img'
+        specifications: '.technical-data'
+        bulkPricing: '.quantity-prices'
+        cad: '.cad-download'
+      waitTime: 3000
+      useProxy: true
+
+  # Italia - RS Components Italia
+  - id: rs-components-it
+    name: RS Components Italia
+    baseUrl: https://it.rs-online.com
+    country: IT
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: electronics_automation
+    officialBrands:
+      - RS PRO
+      - Fluke
+      - Schneider Electric
+      - ABB
+      - Siemens
+    categories:
+      - elettronica
+      - automazione
+      - strumenti
+      - componenti
+      - sicurezza
+    capabilities:
+      - technical_specifications
+      - datasheets
+      - bulk_pricing
+      - technical_support
+    shippingCountries:
+      - IT
+      - CH
+      - MT
+      - SM
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-current'
+        availability: '.stock-level'
+        brand: '.manufacturer'
+        image: '.product-image img'
+        specifications: '.product-attributes'
+        datasheet: '.datasheet-link'
+        bulkPricing: '.price-breaks'
+      waitTime: 2500
+      useProxy: true
+
+  # Francia - Castorama
+  - id: castorama-fr
+    name: Castorama France
+    baseUrl: https://www.castorama.fr
+    country: FR
+    type: retail_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: construction_tools
+    officialBrands:
+      - Bosch
+      - Makita
+      - DeWalt
+      - Stanley
+      - Black & Decker
+    categories:
+      - outillage
+      - construction
+      - jardin
+      - electricite
+      - plomberie
+    shippingCountries:
+      - FR
+      - MC
+      - BE
+      - LU
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-current'
+        availability: '.stock-info'
+        brand: '.brand-name'
+        image: '.product-image img'
+        specifications: '.product-specs'
+      waitTime: 2000
+      useProxy: true
+
+  # Francia - Rexel France Extended
+  - id: rexel-france-extended
+    name: Rexel France Extended
+    baseUrl: https://www.rexel.fr
+    country: FR
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: electrical_supplies
+    officialBrands:
+      - Schneider Electric
+      - Legrand
+      - ABB
+      - Siemens
+      - Hager
+    categories:
+      - electricite
+      - eclairage
+      - domotique
+      - energie
+      - securite
+    capabilities:
+      - technical_specifications
+      - bulk_pricing
+      - project_support
+      - training
+    shippingCountries:
+      - FR
+      - BE
+      - LU
+      - MC
+      - CH
+    scraperConfig:
+      selectors:
+        productName: '.product-title'
+        price: '.price-display'
+        availability: '.availability-status'
+        brand: '.manufacturer'
+        image: '.product-image img'
+        specifications: '.technical-specs'
+        bulkPricing: '.quantity-discounts'
+        projects: '.project-tools'
+      waitTime: 3000
+      useProxy: true
+
+  # Países Bajos - Toolstation NL
+  - id: toolstation-nl
+    name: Toolstation Netherlands
+    baseUrl: https://www.toolstation.nl
+    country: NL
+    type: retail_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: construction_tools
+    officialBrands:
+      - Bosch
+      - Makita
+      - DeWalt
+      - Milwaukee
+      - Festool
+    categories:
+      - gereedschap
+      - bouw
+      - elektra
+      - loodgieterij
+      - tuin
+    shippingCountries:
+      - NL
+      - BE
+      - LU
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-current'
+        availability: '.stock-status'
+        brand: '.brand-name'
+        image: '.product-image img'
+        specifications: '.product-details'
+      waitTime: 2000
+      useProxy: true
+
+  # Países Bajos - Conrad NL
+  - id: conrad-nl
+    name: Conrad Netherlands
+    baseUrl: https://www.conrad.nl
+    country: NL
+    type: b2b_specialized
+    enabled: true
+    priority: 1
+    isOfficial: false
+    specialization: electronics_automation
+    officialBrands:
+      - Conrad
+      - Fluke
+      - Tektronix
+      - Keysight
+      - Rohde & Schwarz
+    categories:
+      - elektronica
+      - meetinstrumenten
+      - automatisering
+      - componenten
+      - gereedschap
+    capabilities:
+      - technical_specifications
+      - datasheets
+      - calibration_services
+      - technical_support
+    shippingCountries:
+      - NL
+      - BE
+      - LU
+      - DE
+    scraperConfig:
+      selectors:
+        productName: '.product-name'
+        price: '.price-display'
+        availability: '.stock-level'
+        brand: '.manufacturer'
+        image: '.product-image img'
+        specifications: '.technical-data'
+        datasheet: '.datasheet-download'
+        calibration: '.calibration-info'
+      waitTime: 2500
+      useProxy: true
+
+# =============================================================================
 # CONFIGURACIÓN DE SISTEMAS
 # =============================================================================
 

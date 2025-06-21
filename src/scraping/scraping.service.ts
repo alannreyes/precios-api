@@ -339,42 +339,52 @@ export class ScrapingService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async scrapeB2BSpecialized(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
-    // Scraping especializado para cada fuente B2B según la Fase 3
-    switch (source.id) {
-      case 'grainger-us':
-      case 'grainger-us-extended':
-        return this.scrapeGrainger(page, source, query);
-      case 'grainger-mx':
-        return this.scrapeGraingerMX(page, source, query);
-      case 'rs-components-uk':
-      case 'rs-components-de':
-        return this.scrapeRSComponents(page, source, query);
-      case 'wurth-de':
-      case 'wurth-us':
-        return this.scrapeWurth(page, source, query);
-      case 'fastenal-us':
-        return this.scrapeFastenal(page, source, query);
-      case 'mcmaster-carr-us':
-        return this.scrapeMcMasterCarr(page, source, query);
-      case 'conrad-de':
-        return this.scrapeConrad(page, source, query);
-      case 'efc-pe':
-      case 'efc-pe-extended':
-        return this.scrapeEFC(page, source, query);
-      case 'farnell-uk':
-        return this.scrapeFarnell(page, source, query);
-      case 'zoro-us':
-        return this.scrapeZoro(page, source, query);
-      case 'misumi-jp':
-      case 'misumi-us':
-        return this.scrapeMisumi(page, source, query);
-      case 'rexel-fr':
-        return this.scrapeRexel(page, source, query);
-      case 'hoffmann-group-de':
-        return this.scrapeHoffmannGroup(page, source, query);
-      default:
-        return this.scrapeGenericB2B(page, source, query);
+    // Mapeo de fuentes específicas a sus scrapers
+    const scraperMap: Record<string, (page: Page, source: SourceConfig, query: SearchQuery) => Promise<ScrapingResult[]>> = {
+      // Fase 3: B2B Especializadas
+      'grainger-us': this.scrapeGrainger.bind(this),
+      'grainger-mx': this.scrapeGraingerMX.bind(this),
+      'rs-components-uk': this.scrapeRSComponents.bind(this),
+      'rs-components-de': this.scrapeRSComponents.bind(this),
+      'rs-components-it': this.scrapeRSComponentsIT.bind(this),
+      'wurth-de': this.scrapeWurth.bind(this),
+      'wurth-us': this.scrapeWurth.bind(this),
+      'wurth-italia-it': this.scrapeWurthItalia.bind(this),
+      'fastenal-us': this.scrapeFastenal.bind(this),
+      'mcmaster-carr-us': this.scrapeMcMasterCarr.bind(this),
+      'conrad-de': this.scrapeConrad.bind(this),
+      'conrad-nl': this.scrapeConradNL.bind(this),
+      'efc-pe-extended': this.scrapeEFC.bind(this),
+      'farnell-uk': this.scrapeFarnell.bind(this),
+      'zoro-us': this.scrapeZoro.bind(this),
+      'misumi-jp': this.scrapeMisumi.bind(this),
+      'misumi-us': this.scrapeMisumi.bind(this),
+      'rexel-fr': this.scrapeRexel.bind(this),
+      'rexel-france-extended': this.scrapeRexelFranceExtended.bind(this),
+      'hoffmann-group-de': this.scrapeHoffmannGroup.bind(this),
+      
+      // Fase 4: Tiendas Directas de Marca
+      'bosch-professional-global': this.scrapeBoschProfessional.bind(this),
+      '3m-direct-us': this.scrape3MDirect.bind(this),
+      'fluke-direct-us': this.scrapeFlukeDirect.bind(this),
+      'milwaukee-direct-us': this.scrapeMilwaukeeDirect.bind(this),
+      'klein-tools-direct-us': this.scrapeKleinToolsDirect.bind(this),
+      'hilti-direct-global': this.scrapeHiltiDirect.bind(this),
+      
+      // Fase 4: Expansión Europea - Retail
+      'leroy-merlin-es': this.scrapeLeroyMerlinES.bind(this),
+      'bricomart-es': this.scrapeBricomartES.bind(this),
+      'castorama-fr': this.scrapeCastoramaFR.bind(this),
+      'toolstation-nl': this.scrapeToolstationNL.bind(this),
+    };
+
+    const scraper = scraperMap[source.id];
+    if (scraper) {
+      return await scraper(page, source, query);
     }
+
+    // Fallback a scraper genérico B2B
+    return this.scrapeGenericB2B(page, source, query);
   }
 
   // Métodos específicos para cada fuente B2B - Fase 3
@@ -747,10 +757,414 @@ export class ScrapingService implements OnModuleInit, OnModuleDestroy {
     }
 
     // Bonus por tener marca identificada
-    if (brand && brand.length > 0) {
+    if (brand && brand.trim() !== '') {
       score += 10;
     }
 
-    return Math.min(Math.round(score), 100);
+    // Normalizar a 0-1
+    return Math.min(Math.max(score / 100, 0), 1);
+  }
+
+  // =============================================================================
+  // NUEVOS MÉTODOS PARA FASE 4: TIENDAS DIRECTAS DE MARCA
+  // =============================================================================
+
+  // Scraper para Bosch Professional
+  private async scrapeBoschProfessional(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando Bosch Professional Store');
+    
+    return this.generateMockBrandDirectResults(source, query, query.maxResults || 10, {
+      specialization: 'power_tools',
+      hasTechnicalSpecs: true,
+      hasWarrantyInfo: true,
+      hasOfficialParts: true,
+      hasServiceCenters: true,
+      priceRange: [50, 800],
+      brand: 'Bosch Professional',
+    });
+  }
+
+  // Scraper para 3M Direct
+  private async scrape3MDirect(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando 3M Direct Store');
+    
+    return this.generateMockBrandDirectResults(source, query, query.maxResults || 10, {
+      specialization: 'ppe_industrial',
+      hasTechnicalSpecs: true,
+      hasMSDSSheets: true,
+      hasCertificationDocs: true,
+      hasBulkPricing: true,
+      priceRange: [15, 300],
+      brand: '3M',
+    });
+  }
+
+  // Scraper para Fluke Direct
+  private async scrapeFlukeDirect(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando Fluke Direct Store');
+    
+    return this.generateMockBrandDirectResults(source, query, query.maxResults || 10, {
+      specialization: 'test_measurement',
+      hasTechnicalSpecs: true,
+      hasCalibrationCertificates: true,
+      hasTrainingMaterials: true,
+      hasSoftwareDownloads: true,
+      priceRange: [100, 5000],
+      brand: 'Fluke',
+    });
+  }
+
+  // Scraper para Milwaukee Tool
+  private async scrapeMilwaukeeDirect(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando Milwaukee Tool Direct');
+    
+    return this.generateMockBrandDirectResults(source, query, query.maxResults || 10, {
+      specialization: 'power_tools',
+      hasTechnicalSpecs: true,
+      hasWarrantyInfo: true,
+      hasBatteryCompatibility: true,
+      hasServiceCenters: true,
+      priceRange: [30, 600],
+      brand: 'Milwaukee',
+    });
+  }
+
+  // Scraper para Klein Tools
+  private async scrapeKleinToolsDirect(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando Klein Tools Direct');
+    
+    return this.generateMockBrandDirectResults(source, query, query.maxResults || 10, {
+      specialization: 'electrical_tools',
+      hasTechnicalSpecs: true,
+      hasElectricalRatings: true,
+      hasSafetyCertifications: true,
+      hasInstructionalVideos: true,
+      priceRange: [20, 400],
+      brand: 'Klein Tools',
+    });
+  }
+
+  // Scraper para Hilti Direct
+  private async scrapeHiltiDirect(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando Hilti Direct Store');
+    
+    return this.generateMockBrandDirectResults(source, query, query.maxResults || 10, {
+      specialization: 'construction_tools',
+      hasTechnicalSpecs: true,
+      hasCADDrawings: true,
+      hasCalculationSoftware: true,
+      hasServiceContracts: true,
+      priceRange: [80, 2000],
+      brand: 'Hilti',
+    });
+  }
+
+  // =============================================================================
+  // NUEVOS MÉTODOS PARA EXPANSIÓN EUROPEA
+  // =============================================================================
+
+  // Scraper para Leroy Merlin España
+  private async scrapeLeroyMerlinES(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando Leroy Merlin España');
+    
+    return this.generateMockRetailResults(source, query, query.maxResults || 10, {
+      specialization: 'construction_tools',
+      country: 'ES',
+      language: 'es',
+      priceRange: [25, 500],
+    });
+  }
+
+  // Scraper para Bricomart España
+  private async scrapeBricomartES(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando Bricomart España');
+    
+    return this.generateMockRetailResults(source, query, query.maxResults || 10, {
+      specialization: 'construction_tools',
+      country: 'ES',
+      language: 'es',
+      priceRange: [20, 400],
+    });
+  }
+
+  // Scraper para Würth Italia
+  private async scrapeWurthItalia(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando Würth Italia');
+    
+    return this.generateMockB2BResults(source, query, query.maxResults || 10, {
+      specialization: 'fasteners_tools',
+      hasTechnicalSpecs: true,
+      hasDatasheets: false,
+      hasCADFiles: true,
+      priceRange: [5, 200],
+    });
+  }
+
+  // Scraper para RS Components Italia
+  private async scrapeRSComponentsIT(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando RS Components Italia');
+    
+    return this.generateMockB2BResults(source, query, query.maxResults || 10, {
+      specialization: 'electronics_automation',
+      hasTechnicalSpecs: true,
+      hasDatasheets: true,
+      hasCADFiles: false,
+      priceRange: [10, 1000],
+    });
+  }
+
+  // Scraper para Castorama Francia
+  private async scrapeCastoramaFR(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando Castorama France');
+    
+    return this.generateMockRetailResults(source, query, query.maxResults || 10, {
+      specialization: 'construction_tools',
+      country: 'FR',
+      language: 'fr',
+      priceRange: [30, 600],
+    });
+  }
+
+  // Scraper para Rexel France Extended
+  private async scrapeRexelFranceExtended(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando Rexel France Extended');
+    
+    return this.generateMockB2BResults(source, query, query.maxResults || 10, {
+      specialization: 'electrical_supplies',
+      hasTechnicalSpecs: true,
+      hasDatasheets: false,
+      hasCADFiles: false,
+      priceRange: [15, 800],
+    });
+  }
+
+  // Scraper para Toolstation NL
+  private async scrapeToolstationNL(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando Toolstation Netherlands');
+    
+    return this.generateMockRetailResults(source, query, query.maxResults || 10, {
+      specialization: 'construction_tools',
+      country: 'NL',
+      language: 'nl',
+      priceRange: [25, 450],
+    });
+  }
+
+  // Scraper para Conrad NL
+  private async scrapeConradNL(page: Page, source: SourceConfig, query: SearchQuery): Promise<ScrapingResult[]> {
+    logger.info('Scrapeando Conrad Netherlands');
+    
+    return this.generateMockB2BResults(source, query, query.maxResults || 10, {
+      specialization: 'electronics_automation',
+      hasTechnicalSpecs: true,
+      hasDatasheets: true,
+      hasCADFiles: false,
+      priceRange: [20, 1200],
+    });
+  }
+
+  // =============================================================================
+  // GENERADORES DE RESULTADOS ESPECÍFICOS PARA FASE 4
+  // =============================================================================
+
+  // Generador para tiendas directas de marca
+  private generateMockBrandDirectResults(
+    source: SourceConfig,
+    query: SearchQuery,
+    count: number,
+    options: {
+      specialization: string;
+      hasTechnicalSpecs: boolean;
+      hasWarrantyInfo?: boolean;
+      hasOfficialParts?: boolean;
+      hasServiceCenters?: boolean;
+      hasMSDSSheets?: boolean;
+      hasCertificationDocs?: boolean;
+      hasBulkPricing?: boolean;
+      hasCalibrationCertificates?: boolean;
+      hasTrainingMaterials?: boolean;
+      hasSoftwareDownloads?: boolean;
+      hasBatteryCompatibility?: boolean;
+      hasElectricalRatings?: boolean;
+      hasSafetyCertifications?: boolean;
+      hasInstructionalVideos?: boolean;
+      hasCADDrawings?: boolean;
+      hasCalculationSoftware?: boolean;
+      hasServiceContracts?: boolean;
+      priceRange: [number, number];
+      brand: string;
+    }
+  ): ScrapingResult[] {
+    const results: ScrapingResult[] = [];
+    
+    for (let i = 0; i < count; i++) {
+      const productName = `${options.brand} ${query.product} Modelo ${i + 1}`;
+      const price = Math.random() * (options.priceRange[1] - options.priceRange[0]) + options.priceRange[0];
+      
+      // Generar especificaciones técnicas específicas
+      let technicalSpecs: Record<string, string> | undefined;
+      if (options.hasTechnicalSpecs) {
+        technicalSpecs = this.generateBrandSpecificTechnicalSpecs(options.specialization, options.brand);
+      }
+
+      // URLs específicas de marca
+      const baseUrl = source.baseUrl;
+      const productSlug = encodeURIComponent(productName.toLowerCase().replace(/\s+/g, '-'));
+      
+      const result: ScrapingResult = {
+        sourceId: source.id,
+        sourceName: source.name,
+        productName,
+        brand: options.brand,
+        price: Math.round(price * 100) / 100,
+        currency: this.extractCurrency('', source.country),
+        productUrl: `${baseUrl}/products/${productSlug}`,
+        imageUrl: `${baseUrl}/images/products/${productSlug}.jpg`,
+        availability: 'in_stock',
+        isOfficialSource: true, // Siempre oficial para tiendas directas
+        confidenceScore: 0.9 + Math.random() * 0.1, // Alta confianza para tiendas oficiales
+        responseTimeMs: 0,
+        scrapedAt: new Date(),
+        technicalSpecs,
+        manufacturerPartNumber: `${options.brand.toUpperCase()}-${Math.random().toString(36).substr(2, 8).toUpperCase()}`,
+      };
+
+      // Agregar capacidades específicas según las opciones
+      if (options.hasWarrantyInfo) {
+        result.warranty = `${Math.floor(Math.random() * 3) + 1} años de garantía oficial ${options.brand}`;
+      }
+
+      if (options.hasMSDSSheets) {
+        result.datasheetUrl = `${baseUrl}/msds/${productSlug}.pdf`;
+      }
+
+      if (options.hasCalibrationCertificates) {
+        result.datasheetUrl = `${baseUrl}/calibration/${productSlug}.pdf`;
+      }
+
+      if (options.hasCADDrawings) {
+        result.cadFileUrl = `${baseUrl}/cad/${productSlug}.dwg`;
+      }
+
+      if (options.hasBulkPricing) {
+        result.bulkPricing = [
+          { quantity: 10, price: result.price * 0.95, currency: result.currency },
+          { quantity: 50, price: result.price * 0.90, currency: result.currency },
+          { quantity: 100, price: result.price * 0.85, currency: result.currency },
+        ];
+      }
+
+      if (options.hasCertificationDocs) {
+        result.certifications = ['CE', 'ISO 9001', 'RoHS'];
+      }
+
+      results.push(result);
+    }
+
+    return results;
+  }
+
+  // Generador para tiendas retail europeas
+  private generateMockRetailResults(
+    source: SourceConfig,
+    query: SearchQuery,
+    count: number,
+    options: {
+      specialization: string;
+      country: string;
+      language: string;
+      priceRange: [number, number];
+    }
+  ): ScrapingResult[] {
+    const results: ScrapingResult[] = [];
+    const brands = source.officialBrands || ['Bosch', 'Makita', 'DeWalt', 'Stanley'];
+    
+    for (let i = 0; i < count; i++) {
+      const brand = brands[i % brands.length];
+      const productName = `${brand} ${query.product} ${options.country} ${i + 1}`;
+      const price = Math.random() * (options.priceRange[1] - options.priceRange[0]) + options.priceRange[0];
+      
+      const isOfficial = this.isOfficialProduct(productName, brand, source);
+      const confidenceScore = this.calculateConfidenceScore(productName, query.product, brand, isOfficial);
+
+      results.push({
+        sourceId: source.id,
+        sourceName: source.name,
+        productName,
+        brand,
+        price: Math.round(price * 100) / 100,
+        currency: this.extractCurrency('', source.country),
+        productUrl: `${source.baseUrl}/productos/${encodeURIComponent(productName)}`,
+        imageUrl: `${source.baseUrl}/imagenes/${encodeURIComponent(productName)}.jpg`,
+        availability: 'in_stock',
+        isOfficialSource: isOfficial,
+        confidenceScore,
+        responseTimeMs: 0,
+        scrapedAt: new Date(),
+        technicalSpecs: this.generateTechnicalSpecs(options.specialization),
+        manufacturerPartNumber: `${brand.toUpperCase()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+      });
+    }
+
+    return results;
+  }
+
+  // Generar especificaciones técnicas específicas por marca
+  private generateBrandSpecificTechnicalSpecs(specialization: string, brand: string): Record<string, string> {
+    const baseSpecs = this.generateTechnicalSpecs(specialization);
+    
+    // Agregar especificaciones específicas por marca
+    switch (brand.toLowerCase()) {
+      case 'bosch professional':
+        return {
+          ...baseSpecs,
+          'Sistema': 'Bosch Professional 18V',
+          'Tecnología': 'Brushless',
+          'Conectividad': 'Bluetooth',
+          'Garantía': '3 años profesional',
+        };
+      case '3m':
+        return {
+          ...baseSpecs,
+          'Tecnología 3M': 'Advanced Materials',
+          'Filtración': 'P3 R',
+          'Adhesión': '3M VHB',
+          'Certificación': 'NIOSH',
+        };
+      case 'fluke':
+        return {
+          ...baseSpecs,
+          'Precisión': '±0.1%',
+          'Resolución': '0.001',
+          'Certificación': 'CAT IV 600V',
+          'Calibración': 'Trazable NIST',
+        };
+      case 'milwaukee':
+        return {
+          ...baseSpecs,
+          'Sistema': 'M18 FUEL',
+          'Motor': 'POWERSTATE Brushless',
+          'Batería': 'REDLITHIUM',
+          'Tecnología': 'ONE-KEY',
+        };
+      case 'klein tools':
+        return {
+          ...baseSpecs,
+          'Aislamiento': '1000V',
+          'Material': 'Acero forjado',
+          'Certificación': 'ASTM',
+          'Garantía': 'Lifetime',
+        };
+      case 'hilti':
+        return {
+          ...baseSpecs,
+          'Sistema': 'Hilti 22V',
+          'Tecnología': 'Active Torque Control',
+          'Conectividad': 'Hilti Connect',
+          'Servicio': 'Hilti Fleet Management',
+        };
+      default:
+        return baseSpecs;
+    }
   }
 } 
