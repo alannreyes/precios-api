@@ -120,13 +120,13 @@ HELMET_ENABLED=true
 - [ ] Métricas Prometheus básicas
 
 #### Semana 3-4: Sistema de Fuentes Dinámico
-- [ ] Entidad `Source` con scoring dinámico
-- [ ] Clasificación automática (Marketplace/B2B/Direct)
-- [ ] Sistema de configuración JSON/YAML
-- [ ] Auto-discovery de nuevas fuentes
+- [x] Entidad `Source` con scoring dinámico ✅
+- [x] Clasificación automática (Marketplace/B2B/Direct) ✅
+- [x] Sistema de configuración JSON/YAML ✅
+- [x] Auto-discovery de nuevas fuentes ✅ (base implementada)
 - [ ] Circuit breakers por fuente
-- [ ] Monitoreo de salud automático
-- [ ] API admin para gestión de fuentes
+- [x] Monitoreo de salud automático ✅ (base implementada)
+- [x] API admin para gestión de fuentes ✅
 
 #### Semana 5-6: MercadoLibre Maestro
 - [ ] Scraper MercadoLibre multi-país (PE, MX, AR, CL, BR, CO)

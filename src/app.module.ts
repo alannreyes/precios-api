@@ -7,6 +7,7 @@ import { TerminusModule } from '@nestjs/terminus';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { SourcesModule } from './sources/sources.module';
 
 @Module({
   imports: [
@@ -16,37 +17,41 @@ import { AppService } from './app.service';
       envFilePath: ['.env.local', '.env'],
     }),
     
-    // Base de datos PostgreSQL
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        url: configService.get('DATABASE_URL'),
-        host: configService.get('DATABASE_HOST', 'localhost'),
-        port: configService.get('DATABASE_PORT', 5432),
-        username: configService.get('DATABASE_USERNAME'),
-        password: configService.get('DATABASE_PASSWORD'),
-        database: configService.get('DATABASE_NAME'),
-        autoLoadEntities: true,
-        synchronize: configService.get('DATABASE_SYNC', false),
-        logging: configService.get('DATABASE_LOGGING', false),
-      }),
-      inject: [ConfigService],
-    }),
+    // Base de datos PostgreSQL (opcional para desarrollo)
+    ...(process.env.DATABASE_URL ? [
+      TypeOrmModule.forRootAsync({
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          type: 'postgres',
+          url: configService.get('DATABASE_URL'),
+          host: configService.get('DATABASE_HOST', 'localhost'),
+          port: configService.get('DATABASE_PORT', 5432),
+          username: configService.get('DATABASE_USERNAME'),
+          password: configService.get('DATABASE_PASSWORD'),
+          database: configService.get('DATABASE_NAME'),
+          autoLoadEntities: true,
+          synchronize: configService.get('DATABASE_SYNC', false),
+          logging: configService.get('DATABASE_LOGGING', false),
+        }),
+        inject: [ConfigService],
+      })
+    ] : []),
     
-    // Redis + Bull Queue
-    BullModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        redis: {
-          host: configService.get('REDIS_HOST', 'localhost'),
-          port: configService.get('REDIS_PORT', 6379),
-          password: configService.get('REDIS_PASSWORD'),
-          db: configService.get('REDIS_DB', 0),
-        },
-      }),
-      inject: [ConfigService],
-    }),
+    // Redis + Bull Queue (opcional para desarrollo)
+    ...(process.env.REDIS_URL ? [
+      BullModule.forRootAsync({
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          redis: {
+            host: configService.get('REDIS_HOST', 'localhost'),
+            port: configService.get('REDIS_PORT', 6379),
+            password: configService.get('REDIS_PASSWORD'),
+            db: configService.get('REDIS_DB', 0),
+          },
+        }),
+        inject: [ConfigService],
+      })
+    ] : []),
     
     // Cron jobs y tareas programadas
     ScheduleModule.forRoot(),
@@ -54,7 +59,7 @@ import { AppService } from './app.service';
     // Health checks
     TerminusModule,
     
-    // Rate limiting (ya configurado)
+    // Rate limiting
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => [
@@ -65,6 +70,9 @@ import { AppService } from './app.service';
       ],
       inject: [ConfigService],
     }),
+
+    // Módulos de funcionalidad
+    SourcesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
