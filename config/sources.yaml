@@ -1,0 +1,201 @@
+# =============================================================================
+# CONFIGURACIÓN DE FUENTES - PRECIOS API
+# =============================================================================
+
+# Fuentes adicionales que se pueden agregar dinámicamente
+additional_sources:
+  
+  # MercadoLibre - Países adicionales
+  - id: mercadolibre-ar
+    name: MercadoLibre Argentina
+    baseUrl: https://listado.mercadolibre.com.ar
+    country: AR
+    type: marketplace
+    enabled: true
+    priority: 1
+    isOfficial: true
+    officialBrands:
+      - Bosch
+      - 3M
+      - Makita
+      - DeWalt
+      - Stanley
+    categories:
+      - herramientas
+      - epp
+      - instrumentos
+      - construccion
+    shippingCountries:
+      - AR
+      - UY
+    scraperConfig:
+      selectors:
+        productName: .ui-search-item__title
+        price: .andes-money-amount__fraction
+        availability: .ui-search-item__stock-info
+        brand: .ui-search-item__brand-name
+        image: .ui-search-result-image__element img
+      waitTime: 2000
+      useProxy: true
+      headers:
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+  - id: mercadolibre-cl
+    name: MercadoLibre Chile
+    baseUrl: https://listado.mercadolibre.cl
+    country: CL
+    type: marketplace
+    enabled: true
+    priority: 1
+    isOfficial: true
+    officialBrands:
+      - Bosch
+      - 3M
+      - Makita
+      - DeWalt
+      - Stanley
+    categories:
+      - herramientas
+      - epp
+      - instrumentos
+      - construccion
+    shippingCountries:
+      - CL
+      - PE
+    scraperConfig:
+      selectors:
+        productName: .ui-search-item__title
+        price: .andes-money-amount__fraction
+        availability: .ui-search-item__stock-info
+        brand: .ui-search-item__brand-name
+        image: .ui-search-result-image__element img
+      waitTime: 2000
+      useProxy: true
+      headers:
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+  # Amazon Business - Países adicionales
+  - id: amazon-business-de
+    name: Amazon Business Germany
+    baseUrl: https://www.amazon.de
+    country: DE
+    type: marketplace
+    enabled: true
+    priority: 1
+    isOfficial: true
+    officialBrands:
+      - Bosch
+      - Würth
+      - Festo
+      - Hilti
+      - 3M
+    categories:
+      - tools
+      - safety
+      - instruments
+      - construction
+    shippingCountries:
+      - DE
+      - AT
+      - CH
+      - NL
+      - FR
+    scraperConfig:
+      selectors:
+        productName: '[data-cy="title-recipe-title"]'
+        price: .a-price-whole
+        availability: '#availability span'
+        brand: '#bylineInfo'
+        image: '#landingImage'
+      waitTime: 3000
+      useProxy: true
+      headers:
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+  # B2B Especializados - Adicionales
+  - id: rs-components-uk
+    name: RS Components UK
+    baseUrl: https://uk.rs-online.com
+    country: UK
+    type: b2b_specialized
+    enabled: true
+    priority: 2
+    isOfficial: false
+    categories:
+      - electronics
+      - automation
+      - tools
+      - safety
+    shippingCountries:
+      - UK
+      - IE
+      - DE
+      - FR
+      - ES
+    scraperConfig:
+      selectors:
+        productName: .product-title
+        price: .price-value
+        availability: .availability-status
+        brand: .manufacturer-name
+        image: .product-image img
+      waitTime: 2500
+      useProxy: true
+      headers:
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+  - id: wurth-de
+    name: Würth Germany
+    baseUrl: https://eshop.wurth.de
+    country: DE
+    type: b2b_specialized
+    enabled: true
+    priority: 2
+    isOfficial: false
+    categories:
+      - fasteners
+      - tools
+      - construction
+      - automotive
+    shippingCountries:
+      - DE
+      - AT
+      - CH
+      - NL
+      - FR
+      - IT
+    scraperConfig:
+      selectors:
+        productName: .product-name
+        price: .price-current
+        availability: .stock-info
+        brand: .brand-name
+        image: .product-img img
+      waitTime: 3000
+      useProxy: true
+      headers:
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+# Configuración de auto-discovery
+auto_discovery:
+  enabled: true
+  check_interval: 86400 # 24 horas en segundos
+  max_new_sources_per_day: 5
+  confidence_threshold: 0.8
+
+# Configuración de health monitoring
+health_monitoring:
+  enabled: true
+  check_interval: 3600 # 1 hora en segundos
+  failure_threshold: 3
+  degraded_threshold: 5
+  recovery_attempts: 3
+
+# Configuración de scoring
+scoring:
+  weights:
+    response_time: 0.3
+    success_rate: 0.4
+    data_quality: 0.2
+    official_status: 0.1
+  update_interval: 1800 # 30 minutos en segundos 
