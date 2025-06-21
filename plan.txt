@@ -1,0 +1,514 @@
+# PLAN MAESTRO - API DE BÚSQUEDA DE PRECIOS
+# ACTUALIZADO: Estrategia Marketplaces + Tiendas Oficiales
+
+## VISIÓN ESTRATÉGICA ACTUALIZADA
+
+### OBJETIVO CENTRAL:
+Crear la **plataforma líder mundial** para búsqueda de precios industriales con:
+- **Cobertura masiva**: 100+ fuentes automatizadas
+- **Precios oficiales garantizados**: Diferenciación automática oficial vs distribuidor  
+- **Mantenimiento cero**: Sistema auto-gestionado y auto-reparable
+- **Precisión absoluta**: >99% exactitud en matches
+- **Escalabilidad infinita**: Agregar fuentes sin desarrollo custom
+
+### DIFERENCIACIÓN COMPETITIVA CLAVE:
+1. **Estrategia Marketplace-First**: 1 scraper = 30+ marcas oficiales
+2. **Inteligencia Artificial**: Auto-validación y auto-mantenimiento
+3. **Cobertura global imposible de replicar**: Barrera de entrada altísima
+4. **Precios oficiales vs distribuidores**: Valor único en el mercado
+
+## ARQUITECTURA EMPRESARIAL EXPANDIDA
+
+### STACK TECNOLÓGICO DEFINITIVO:
+```
+BACKEND:
+├── NestJS + TypeScript (✓ Ya implementado)
+├── PostgreSQL + TypeORM (productos, fuentes, históricos)
+├── Redis Cluster (cache distribuido + queue)
+├── Playwright + Puppeteer (scraping anti-detección)
+├── OpenAI GPT-4 + Google Gemini (validación dual IA)
+└── Bull Queue (jobs distribuidos)
+
+INFRAESTRUCTURA:
+├── Docker + Kubernetes (auto-scaling)
+├── AWS/GCP (multi-región)
+├── CloudFlare (CDN + DDoS protection)
+├── Sentry (error monitoring)
+├── Grafana + Prometheus (métricas)
+└── GitHub Actions (CI/CD)
+
+SERVICIOS EXTERNOS:
+├── Bright Data / ProxyMesh (proxies premium)
+├── SimilarWeb API (análisis competencia)
+├── ExchangeRate API (conversión monedas)
+├── SendGrid (notificaciones)
+└── Stripe (billing para API premium)
+```
+
+### CONFIGURACIÓN EMPRESARIAL:
+```env
+# CORE SYSTEM
+NODE_ENV=production
+PORT=3000
+API_VERSION=v1
+RATE_LIMIT_MAX=100
+RATE_LIMIT_WINDOW=3600000
+
+# DATABASE
+DATABASE_URL=postgresql://user:pass@host:5432/precios_api
+REDIS_URL=redis://user:pass@host:6379
+REDIS_CLUSTER_ENABLED=true
+
+# AI SERVICES
+OPENAI_API_KEY=sk-...
+GEMINI_API_KEY=...
+AI_VALIDATION_ENABLED=true
+AI_CONFIDENCE_THRESHOLD=0.95
+
+# SCRAPING INFRASTRUCTURE
+PLAYWRIGHT_ENABLED=true
+PROXY_SERVICE=bright_data
+PROXY_USERNAME=...
+PROXY_PASSWORD=...
+ANTI_DETECTION_ENABLED=true
+STEALTH_MODE=true
+
+# MARKETPLACE CONFIGS
+MERCADOLIBRE_ENABLED=true
+AMAZON_BUSINESS_ENABLED=true
+FALABELLA_ENABLED=true
+TMALL_ENABLED=false
+
+# MONITORING & ALERTS
+SENTRY_DSN=https://...
+GRAFANA_ENABLED=true
+SLACK_WEBHOOK=https://...
+ERROR_THRESHOLD=0.01
+
+# BUSINESS LOGIC
+EXACT_MATCH_ONLY=true
+ALTERNATIVES_DEFAULT=false
+OFFICIAL_SOURCES_PRIORITY=true
+CACHE_TTL=14400
+MAX_RESPONSE_TIME=15000
+
+# COUNTRIES & CURRENCIES
+SUPPORTED_COUNTRIES=PE,MX,AR,CL,BR,CO,US,DE,UK,JP,ES,IT,FR,NL,CN,TW,KR,CA
+DEFAULT_CURRENCY_API=exchangerate-api.com
+CURRENCY_UPDATE_INTERVAL=3600000
+
+# SECURITY
+JWT_SECRET=...
+API_KEY_ENCRYPTION=AES256
+CORS_ORIGINS=https://app1.com,https://app2.com
+HELMET_ENABLED=true
+```
+
+## PLAN DE DESARROLLO ACTUALIZADO - 28 SEMANAS
+
+### FASE 1: FUNDACIÓN SÓLIDA + MARKETPLACES CORE (6 semanas)
+**Objetivo**: Base arquitectónica empresarial + MercadoLibre Latinoamérica operativo
+
+#### Semana 1-2: Arquitectura Empresarial
+- [x] PostgreSQL + TypeORM setup completo ✅
+- [x] Redis Cluster configuración ✅
+- [x] Bull Queue system implementado ✅
+- [x] Docker + Docker Compose production-ready ✅
+- [x] Variables de entorno categorizadas ✅
+- [x] Logging estructurado (Winston + ELK) ✅
+- [x] Health checks avanzados ✅
+- [ ] Métricas Prometheus básicas
+
+#### Semana 3-4: Sistema de Fuentes Dinámico
+- [ ] Entidad `Source` con scoring dinámico
+- [ ] Clasificación automática (Marketplace/B2B/Direct)
+- [ ] Sistema de configuración JSON/YAML
+- [ ] Auto-discovery de nuevas fuentes
+- [ ] Circuit breakers por fuente
+- [ ] Monitoreo de salud automático
+- [ ] API admin para gestión de fuentes
+
+#### Semana 5-6: MercadoLibre Maestro
+- [ ] Scraper MercadoLibre multi-país (PE, MX, AR, CL, BR, CO)
+- [ ] Identificación automática tiendas oficiales vs terceros
+- [ ] Sistema de validación marca oficial
+- [ ] Cache inteligente por país/categoría
+- [ ] 25+ marcas oficiales operativas
+- [ ] Testing exhaustivo multi-país
+
+**ENTREGABLES FASE 1:**
+- ✅ Arquitectura empresarial completa
+- ✅ MercadoLibre 6 países operativo
+- ✅ 25+ marcas oficiales identificadas
+- ✅ Sistema de fuentes auto-gestionado
+- ✅ Métricas y monitoreo básico
+
+### FASE 2: AMAZON + IA AVANZADA (4 semanas)
+**Objetivo**: Amazon Business global + Validación IA dual
+
+#### Semana 7-8: Amazon Business Integration
+- [ ] Amazon Business scraper (US, DE, UK, MX, BR, JP)
+- [ ] Amazon Official Stores identification
+- [ ] B2B pricing vs consumer pricing
+- [ ] Multi-región currency handling
+- [ ] Inventory status tracking
+- [ ] Prime Business shipping info
+
+#### Semana 9-10: Inteligencia Artificial Dual
+- [ ] OpenAI GPT-4 integration para validación
+- [ ] Google Gemini backup/validation
+- [ ] Prompt engineering optimizado
+- [ ] Confidence scoring avanzado
+- [ ] Auto-learning from corrections
+- [ ] AI-powered product normalization
+- [ ] Similaridad semántica avanzada
+
+**ENTREGABLES FASE 2:**
+- ✅ Amazon Business 6 países operativo
+- ✅ IA dual validation >95% precisión
+- ✅ 50+ fuentes totales operativas
+- ✅ Sistema de alternativas inteligentes
+- ✅ Auto-learning implementado
+
+### FASE 3: TIENDAS ESPECIALIZADAS B2B (5 semanas)
+**Objetivo**: Tiendas B2B industriales + Cobertura técnica especializada
+
+#### Semana 11-13: Gigantes B2B Globales
+- [ ] Grainger (US, MX) - Suministros industriales
+- [ ] RS Components (UK, DE, Global) - Electrónicos
+- [ ] Würth (DE, Global) - Fijaciones y herramientas
+- [ ] Fastenal (US) - Suministros industriales
+- [ ] McMaster-Carr (US) - Componentes técnicos
+- [ ] Conrad (DE) - Electrónicos y automatización
+
+#### Semana 14-15: Especialistas Regionales
+- [ ] EFC (PE) - EPP y herramientas
+- [ ] Farnell (UK, Global) - Electrónicos
+- [ ] Zoro (US) - Suministros industriales
+- [ ] Misumi (JP, Global) - Componentes manufactura
+- [ ] Rexel (FR, Global) - Material eléctrico
+- [ ] Hoffmann Group (DE) - Herramientas profesionales
+
+**ENTREGABLES FASE 3:**
+- ✅ 70+ fuentes totales operativas
+- ✅ Cobertura B2B especializada completa
+- ✅ Catálogos técnicos integrados
+- ✅ Precios B2B vs consumer diferenciados
+- ✅ Información técnica detallada
+
+### FASE 4: TIENDAS DIRECTAS + EXPANSIÓN EUROPEA (4 semanas)
+**Objetivo**: Tiendas oficiales de marca + Cobertura europea completa
+
+#### Semana 16-17: Tiendas Directas de Marca
+- [ ] Bosch (Global) - Herramientas profesionales
+- [ ] 3M (Global) - Seguridad y adhesivos
+- [ ] Fluke (Global) - Instrumentos de medición
+- [ ] Milwaukee (Global) - Herramientas eléctricas
+- [ ] Klein Tools (US) - Herramientas eléctricas
+- [ ] Hilti (Global) - Construcción profesional
+
+#### Semana 18-19: Expansión Europea Completa
+- [ ] España: Amazon.es, RS Components ES, Würth ES
+- [ ] Italia: Amazon.it, RS Components IT, Würth IT
+- [ ] Francia: Amazon.fr, Rexel FR, Würth FR
+- [ ] Países Bajos: Amazon.nl, RS Components NL
+- [ ] Integración completa Tier 2 países
+
+**ENTREGABLES FASE 4:**
+- ✅ Tiendas oficiales directas operativas
+- ✅ Europa Tier 2 completamente cubierta
+- ✅ 85+ fuentes totales operativas
+- ✅ Precios oficiales vs distribuidores
+- ✅ Garantías oficiales identificadas
+
+### FASE 5: MERCADOS MANUFACTUREROS + ASIA (5 semanas)
+**Objetivo**: Cobertura manufacturera Asia + Validación global
+
+#### Semana 20-22: Gigantes Manufactureros Asiáticos
+- [ ] China: Tmall Official Stores, 1688.com B2B
+- [ ] Taiwán: PCHome B2B, Ruten Business
+- [ ] Corea del Sur: Gmarket B2B, 11Street Business
+- [ ] Japón: Amazon Business JP, MonotaRO
+- [ ] Singapur: Lazada Business, Shopee B2B
+
+#### Semana 23-24: Validación y Optimización Global
+- [ ] Testing exhaustivo multi-región
+- [ ] Optimización performance global
+- [ ] Currency conversion en tiempo real
+- [ ] Shipping cost calculations
+- [ ] Tax calculations por país
+- [ ] Compliance regulations por región
+
+**ENTREGABLES FASE 5:**
+- ✅ Asia manufacturera completamente cubierta
+- ✅ 95+ fuentes totales operativas
+- ✅ Sistema global de validación
+- ✅ Cálculos automáticos impuestos/envío
+- ✅ Compliance multi-región
+
+### FASE 6: PRODUCCIÓN + AUTO-MANTENIMIENTO (4 semanas)
+**Objetivo**: Sistema production-ready + Mantenimiento automático
+
+#### Semana 25-26: Sistema de Auto-Mantenimiento
+- [ ] AI-powered source health monitoring
+- [ ] Auto-repair de scrapers rotos
+- [ ] Predictive maintenance algorithms
+- [ ] Auto-scaling basado en demanda
+- [ ] Auto-discovery de nuevas fuentes
+- [ ] Self-healing architecture completa
+
+#### Semana 27-28: Optimización Final + Lanzamiento
+- [ ] Load testing extremo (10,000 req/min)
+- [ ] Security audit completo
+- [ ] Performance optimization final
+- [ ] Documentation completa
+- [ ] API versioning strategy
+- [ ] Billing system para clientes enterprise
+- [ ] 🚀 **LANZAMIENTO OFICIAL**
+
+**ENTREGABLES FASE 6:**
+- ✅ 100+ fuentes auto-gestionadas
+- ✅ Sistema completamente autónomo
+- ✅ Performance <10s promedio
+- ✅ 99.9% uptime garantizado
+- ✅ Escalabilidad infinita
+- ✅ **LANZAMIENTO MUNDIAL**
+
+## MÉTRICAS DE ÉXITO POR FASE
+
+### FASE 1 - KPIs:
+- ✅ 25+ marcas oficiales MercadoLibre
+- ✅ 6 países latinoamericanos operativos
+- ✅ <20s tiempo respuesta promedio
+- ✅ 95%+ identificación oficial vs tercero
+- ✅ 0 downtime durante desarrollo
+
+### FASE 2 - KPIs:
+- ✅ 50+ fuentes totales operativas
+- ✅ >95% precisión validación IA
+- ✅ <15s tiempo respuesta promedio
+- ✅ 6 países adicionales (Amazon Business)
+- ✅ Sistema alternativas funcionando
+
+### FASE 3 - KPIs:
+- ✅ 70+ fuentes B2B especializadas
+- ✅ Cobertura técnica completa
+- ✅ Precios B2B diferenciados
+- ✅ Información técnica detallada
+- ✅ <12s tiempo respuesta promedio
+
+### FASE 4 - KPIs:
+- ✅ 85+ fuentes incluyendo oficiales
+- ✅ Europa Tier 2 completamente cubierta
+- ✅ Diferenciación oficial vs distribuidor
+- ✅ Garantías oficiales identificadas
+- ✅ <10s tiempo respuesta promedio
+
+### FASE 5 - KPIs:
+- ✅ 95+ fuentes globales
+- ✅ Asia manufacturera cubierta
+- ✅ Cálculos automáticos completos
+- ✅ Compliance multi-región
+
+### FASE 6 - KPIs:
+- ✅ 100+ fuentes auto-mantenidas
+- ✅ Sistema completamente autónomo
+- ✅ <8s tiempo respuesta promedio
+- ✅ 99.9% uptime
+- ✅ Escalabilidad infinita comprobada
+
+## ESTRUCTURA DE FUENTES FINAL (100+ Fuentes)
+
+### TIER A: MARKETPLACES OFICIALES (30+ fuentes)
+```
+MercadoLibre: PE, MX, AR, CL, BR, CO, UY, EC, VE, BO
+Amazon Business: US, DE, UK, MX, BR, JP, FR, IT, ES, NL, CA, AU
+Falabella: CL, CO, PE
+Tmall Official: CN
+Rakuten Business: JP
+eBay Business: US, DE, UK
+```
+
+### TIER B: B2B ESPECIALIZADOS (40+ fuentes)
+```
+Grainger: US, MX, CA
+RS Components: UK, DE, FR, IT, ES, NL, JP, CN, SG
+Würth: DE, US, FR, IT, ES, UK, NL, AT, CH, PL
+Fastenal: US, CA, MX
+McMaster-Carr: US
+Conrad: DE, FR, IT, AT, CH
+Farnell: UK, DE, FR, IT, ES, NL, US, SG
+EFC: PE
+Misumi: JP, US, DE, CN, TW, KR, TH, SG
+Rexel: FR, DE, UK, IT, ES, NL, BE, US
+```
+
+### TIER C: OFICIALES DIRECTOS (30+ fuentes)
+```
+Bosch: Global (20+ países)
+3M: Global (15+ países)
+Fluke: Global (12+ países)
+Milwaukee: Global (10+ países)
+Hilti: Global (15+ países)
+Klein Tools: US, CA
+Stanley: Global (12+ países)
+DeWalt: Global (10+ países)
+Makita: Global (8+ países)
+```
+
+## CASOS DE USO ÚNICOS DIFERENCIADORES
+
+### 1. COMPARACIÓN OFICIAL vs DISTRIBUIDOR
+```
+Búsqueda: "Multímetro Fluke 87V"
+Resultado:
+├── Fluke.com (US): $399 [OFICIAL] ⭐
+├── Grainger (US): $425 [DISTRIBUIDOR B2B]
+├── Amazon Business: $389 [OFICIAL AMAZON] ⭐
+└── EFC (PE): S/1,450 [DISTRIBUIDOR LOCAL]
+```
+
+### 2. MEJOR PRECIO MULTI-PAÍS
+```
+Búsqueda: "Taladro Bosch GSB 18V-21"
+Resultado:
+├── Amazon.de: €89 [OFICIAL] 🏆 MEJOR PRECIO
+├── Bosch.com (DE): €95 [OFICIAL]
+├── Würth (DE): €92 [DISTRIBUIDOR B2B]
+└── Amazon.com (US): $105 [OFICIAL]
+```
+
+### 3. VALIDACIÓN DE AUTENTICIDAD
+```
+Búsqueda: "Casco 3M H-700"
+Resultado:
+├── 3M.com: $45 [GARANTÍA OFICIAL] ✅
+├── Amazon Business: $42 [TIENDA OFICIAL 3M] ✅
+├── Grainger: $47 [DISTRIBUIDOR AUTORIZADO] ⚠️
+└── MercadoLibre: $35 [VENDEDOR TERCERO] ❌
+```
+
+## VENTAJA COMPETITIVA IMPOSIBLE DE REPLICAR
+
+### 1. BARRERA DE ENTRADA TÉCNICA:
+- **100+ scrapers** = 2+ años desarrollo manual
+- **Sistema auto-mantenimiento** = Tecnología propietaria
+- **Validación IA dual** = Costos prohibitivos para competencia
+- **Cobertura global** = Inversión inicial millonaria
+
+### 2. BARRERA DE ENTRADA OPERATIVA:
+- **Proxies premium globales** = $50K+ anuales
+- **APIs IA** = $20K+ mensuales en volumen
+- **Infraestructura global** = $30K+ mensuales
+- **Mantenimiento 100+ fuentes** = 10+ desarrolladores full-time
+
+### 3. VENTAJA DE DATOS:
+- **Histórico precios** = Valor acumulativo
+- **Patrones de disponibilidad** = Inteligencia de mercado
+- **Relaciones oficiales** = Acceso preferencial
+- **Machine learning** = Mejora continua automática
+
+## MODELO DE NEGOCIO ESCALABLE
+
+### TIER FREEMIUM:
+- 100 búsquedas/mes gratis
+- Solo resultados básicos
+- 1 país por búsqueda
+
+### TIER PROFESSIONAL ($99/mes):
+- 5,000 búsquedas/mes
+- Comparación multi-país
+- Identificación oficial vs distribuidor
+- API access
+
+### TIER ENTERPRISE ($499/mes):
+- 50,000 búsquedas/mes
+- Todos los países
+- Alertas de precios
+- Soporte prioritario
+- Custom integrations
+
+### TIER ENTERPRISE+ (Custom):
+- Búsquedas ilimitadas
+- White-label solution
+- Dedicated infrastructure
+- SLA 99.99%
+- Custom features
+
+## CRONOGRAMA DETALLADO
+
+```
+ENERO 2025:
+├── Sem 1: Arquitectura empresarial
+├── Sem 2: PostgreSQL + Redis setup
+├── Sem 3: Sistema fuentes dinámico
+└── Sem 4: MercadoLibre base
+
+FEBRERO 2025:
+├── Sem 5: MercadoLibre multi-país
+├── Sem 6: Testing + optimización
+├── Sem 7: Amazon Business base
+└── Sem 8: Amazon multi-región
+
+MARZO 2025:
+├── Sem 9: OpenAI + Gemini IA
+├── Sem 10: Validación avanzada
+├── Sem 11: Grainger + RS Components
+└── Sem 12: Würth + Fastenal
+
+ABRIL 2025:
+├── Sem 13: McMaster + Conrad
+├── Sem 14: EFC + especialistas
+├── Sem 15: Farnell + Misumi
+├── Sem 16: Tiendas oficiales base
+
+MAYO 2025:
+├── Sem 17: Bosch + 3M + Fluke
+├── Sem 18: Europa Tier 2
+├── Sem 19: Expansión europea
+├── Sem 20: China + Tmall
+
+JUNIO 2025:
+├── Sem 21: Taiwán + Corea
+├── Sem 22: Japón + Singapur
+├── Sem 23: Validación global
+├── Sem 24: Optimización
+
+JULIO 2025:
+├── Sem 25: Auto-mantenimiento
+├── Sem 26: Self-healing
+├── Sem 27: Optimización final
+└── Sem 28: 🚀 LANZAMIENTO OFICIAL
+```
+
+## INVERSIÓN ESTIMADA
+
+### DESARROLLO (28 semanas):
+- Desarrollador senior: $150K
+- DevOps engineer: $100K
+- QA engineer: $80K
+- **Total desarrollo**: $330K
+
+### INFRAESTRUCTURA (Anual):
+- Proxies premium: $60K
+- APIs IA (OpenAI + Gemini): $240K
+- Cloud infrastructure: $120K
+- Monitoring tools: $36K
+- **Total infraestructura**: $456K
+
+### TOTAL INVERSIÓN AÑO 1: $786K
+
+### ROI PROYECTADO:
+- Mes 6: $50K MRR (500 clientes Professional)
+- Mes 12: $200K MRR (1,500 Professional + 100 Enterprise)
+- Mes 18: $500K MRR (Scale global)
+- **ROI Break-even**: Mes 14
+- **ROI 300%**: Mes 24
+
+## CONCLUSIÓN ESTRATÉGICA
+
+Este plan nos posiciona para crear **el Google de búsqueda de precios industriales**, con una ventaja competitiva imposible de replicar y un modelo de negocio altamente escalable.
+
+La combinación de **marketplaces oficiales + IA avanzada + auto-mantenimiento** crea una barrera de entrada tan alta que prácticamente garantiza el liderazgo de mercado a largo plazo.
+
+**¿Estás listo para construir el futuro de la búsqueda de precios industriales? 🚀** 

@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: precios-api-postgres
+    environment:
+      POSTGRES_DB: precios_api
+      POSTGRES_USER: precios_user
+      POSTGRES_PASSWORD: precios_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U precios_user -d precios_api"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - precios-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: precios-api-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - precios-network
+
+  # Redis Commander (GUI para Redis)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: precios-api-redis-gui
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - precios-network
+
+  # pgAdmin (GUI para PostgreSQL)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: precios-api-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@precios-api.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - precios-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  precios-network:
+    driver: bridge 

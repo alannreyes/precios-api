@@ -1,21 +1,70 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { BullModule } from '@nestjs/bull';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TerminusModule } from '@nestjs/terminus';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 @Module({
   imports: [
+    // Configuración global
     ConfigModule.forRoot({
-      isGlobal: true, // Hace que las variables estén disponibles globalmente
-      envFilePath: '.env', // Archivo de variables de entorno
+      isGlobal: true,
+      envFilePath: ['.env.local', '.env'],
     }),
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60000, // 1 minuto
-        limit: 100, // 100 requests por minuto por IP
-      },
-    ]),
+    
+    // Base de datos PostgreSQL
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        url: configService.get('DATABASE_URL'),
+        host: configService.get('DATABASE_HOST', 'localhost'),
+        port: configService.get('DATABASE_PORT', 5432),
+        username: configService.get('DATABASE_USERNAME'),
+        password: configService.get('DATABASE_PASSWORD'),
+        database: configService.get('DATABASE_NAME'),
+        autoLoadEntities: true,
+        synchronize: configService.get('DATABASE_SYNC', false),
+        logging: configService.get('DATABASE_LOGGING', false),
+      }),
+      inject: [ConfigService],
+    }),
+    
+    // Redis + Bull Queue
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('REDIS_HOST', 'localhost'),
+          port: configService.get('REDIS_PORT', 6379),
+          password: configService.get('REDIS_PASSWORD'),
+          db: configService.get('REDIS_DB', 0),
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    
+    // Cron jobs y tareas programadas
+    ScheduleModule.forRoot(),
+    
+    // Health checks
+    TerminusModule,
+    
+    // Rate limiting (ya configurado)
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => [
+        {
+          ttl: configService.get('RATE_LIMIT_WINDOW', 60000),
+          limit: configService.get('RATE_LIMIT_MAX', 100),
+        },
+      ],
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

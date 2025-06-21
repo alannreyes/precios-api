@@ -1,0 +1,261 @@
+# ANÁLISIS DE REQUERIMIENTOS - API DE BÚSQUEDA DE PRECIOS
+# ACTUALIZADO: Incluyendo Marketplaces con Tiendas Oficiales
+
+## RESUMEN DE LO QUE ENTIENDO:
+
+### CONCEPTO PRINCIPAL EXPANDIDO:
+Una API REST que busca precios de productos específicos en:
+1. **Tiendas especializadas** (EFC, Grainger, RS Components, etc.)
+2. **Marketplaces con tiendas oficiales** (MercadoLibre, Amazon, Falabella)
+3. **Tiendas directas de marca** (Bosch.com, 3M.com, etc.)
+
+Priorizando PRECISIÓN ABSOLUTA sobre cantidad de resultados, con capacidad de 
+diferenciar entre precios oficiales vs distribuidores.
+
+### PRINCIPIO FUNDAMENTAL CLAVE ACTUALIZADO:
+- Por defecto: Producto exacto o nada
+- Opcional: Mostrar similares solo si se pide alternatives=true
+- NUNCA adivinar o sugerir productos diferentes sin avisar
+- **NUEVO**: Diferenciar claramente tiendas oficiales vs distribuidores
+- **NUEVO**: Priorizar precios oficiales cuando estén disponibles
+
+## FUNCIONALIDADES CORE IDENTIFICADAS:
+
+### 1. BÚSQUEDA EXACTA (RF-001, RF-002)
+- Input: nombre producto + país
+- Output: solo matches 100% exactos (marca, tamaño, tipo)
+- Confidence score mínimo: 95%
+- Timeout máximo: 15 segundos
+- **NUEVO**: Identificación automática de fuente oficial vs distribuidor
+
+### 2. BÚSQUEDA CON ALTERNATIVAS (RF-003)
+- Solo cuando alternatives=true
+- Productos similares marcados como "SIMILAR"
+- Indica qué difiere exactamente
+- Ordenados por score de similitud
+- **NUEVO**: Priorizar alternativas de fuentes oficiales
+
+### 3. SOPORTE MULTI-PAÍS EXPANDIDO (RF-004)
+**TIER 1 - Mercados Industriales:**
+- 🇩🇪 Alemania, 🇺🇸 Estados Unidos, 🇯🇵 Japón, 🇬🇧 Reino Unido
+
+**TIER 2 - Europa + Manufactura:**
+- 🇪🇸 España, 🇮🇹 Italia, 🇫🇷 Francia, 🇳🇱 Países Bajos
+- 🇨🇳 China, 🇹🇼 Taiwán, 🇰🇷 Corea del Sur, 🇨🇦 Canadá
+
+**TIER 3 - Latinoamérica:**
+- 🇵🇪 Perú, 🇲🇽 México, 🇦🇷 Argentina, 🇨🇱 Chile, 🇨🇴 Colombia, 🇧🇷 Brasil
+
+### 4. INFORMACIÓN COMPLETA EXPANDIDA (RF-005)
+- Precio + moneda + URL + disponibilidad
+- Stock, envío, tiempo entrega
+- Opciones de retiro
+- **NUEVO**: Tipo de fuente (oficial/distribuidor)
+- **NUEVO**: Tipo de garantía (oficial/distribuidor)
+- **NUEVO**: Comparación cross-platform
+
+### 5. GESTIÓN INTELIGENTE DE FUENTES (RF-006 - NUEVO)
+- Descubrimiento automático de nuevas tiendas
+- Monitoreo continuo de salud de fuentes
+- Scoring dinámico de relevancia
+- Exclusión automática de fuentes degradadas
+- Mantenimiento predictivo de scrapers
+
+## ARQUITECTURA TÉCNICA EXPANDIDA:
+
+### STACK PRINCIPAL:
+- NestJS (ya tenemos esto ✓)
+- PostgreSQL + TypeORM (productos, fuentes, históricos)
+- Redis para cache (4 horas TTL)
+- Playwright para scraping
+- OpenAI GPT-4 + Gemini para validación IA
+- Rate limiting: 100 req/hora por API key
+
+### FUENTES DE DATOS CATEGORIZADAS:
+
+#### TIPO A: MARKETPLACES CON TIENDAS OFICIALES (Prioridad 1)
+**Ventajas:**
+- Scraping estandarizado (1 scraper = 30+ marcas)
+- Precios oficiales garantizados
+- Estructura estable y conocida
+- Cobertura masiva de marcas
+
+**Ejemplos:**
+- MercadoLibre (PE, MX, AR, CL, BR, CO)
+- Amazon Business/Official Stores (US, DE, UK, MX, BR, JP)
+- Falabella (CL, CO, PE)
+- Tmall Official Stores (CN)
+
+#### TIPO B: TIENDAS ESPECIALIZADAS B2B (Prioridad 2)
+**Ventajas:**
+- Catálogo técnico especializado
+- Precios B2B competitivos
+- Información técnica detallada
+
+**Ejemplos:**
+- Grainger (US, MX), RS Components (UK, DE, Global)
+- EFC (PE), Würth (DE, Global), Fastenal (US)
+
+#### TIPO C: TIENDAS DIRECTAS DE MARCA (Prioridad 3)
+**Ventajas:**
+- Precios oficiales directos
+- Catálogo completo de marca
+- Especificaciones técnicas oficiales
+
+**Ejemplos:**
+- Bosch.com, 3M.com, Fluke.com por país
+
+### FLUJO DE PROCESAMIENTO ACTUALIZADO:
+1. Validar request + API key
+2. Check cache Redis
+3. Normalizar producto con IA
+4. **NUEVO**: Priorizar fuentes por tipo (A > B > C)
+5. Scraping paralelo priorizando fuentes oficiales
+6. Validación estricta con IA
+7. **NUEVO**: Clasificar resultados por tipo de fuente
+8. Filtrar solo matches exactos (o similares si se pidió)
+9. **NUEVO**: Comparación cross-platform oficial vs distribuidor
+10. Respuesta estructurada con diferenciación de fuentes
+
+### TIENDAS PRIORIZADAS POR PAÍS:
+
+#### PERÚ (PE):
+**Tipo A**: MercadoLibre PE (Bosch, 3M, Makita, DeWalt oficiales)
+**Tipo B**: EFC.com.pe, Sodimac Constructor, Promart
+**Tipo C**: Bosch Perú, 3M Perú (si disponibles)
+
+#### ESTADOS UNIDOS (US):
+**Tipo A**: Amazon Business (Fluke, 3M, Milwaukee, Klein oficiales)
+**Tipo B**: Grainger, McMaster-Carr, Fastenal, Zoro
+**Tipo C**: Fluke.com, 3M.com, Bosch USA
+
+#### ALEMANIA (DE):
+**Tipo A**: Amazon.de (Bosch, Würth, Festo, Hilti oficiales)
+**Tipo B**: RS Components DE, Conrad, Farnell, Würth
+**Tipo C**: Bosch.de, Festo.com, Hilti.de
+
+## REQUERIMIENTOS NO FUNCIONALES ACTUALIZADOS:
+
+### PERFORMANCE:
+- < 15s máximo respuesta
+- < 10s promedio
+- 100 requests concurrentes
+- Cache hit rate > 60%
+- **NUEVO**: Priorización inteligente de fuentes (oficiales primero)
+
+### PRECISIÓN:
+- 99%+ exactitud en matches
+- < 1% falsos positivos
+- Tolerancia 5% en tamaños
+- Validación dual (IA + reglas)
+- **NUEVO**: 100% precisión en identificación oficial vs distribuidor
+
+### DISPONIBILIDAD:
+- 99.9% uptime
+- Failover automático
+- Circuit breakers
+- Health checks
+- **NUEVO**: Monitoreo automático de fuentes
+- **NUEVO**: Auto-exclusión de fuentes degradadas
+
+### ESCALABILIDAD NUEVA:
+- Descubrimiento automático de nuevas fuentes
+- Configuración dinámica sin código
+- Auto-adaptación a cambios de estructura
+- Mantenimiento predictivo
+
+## PLAN DE IMPLEMENTACIÓN ACTUALIZADO:
+
+### FASE 1 - FUNDACIÓN + MARKETPLACES (4-6 semanas):
+- Base arquitectónica robusta
+- **PRIORIDAD**: MercadoLibre Latinoamérica (PE, MX, AR, CL, BR)
+- Sistema de clasificación de fuentes
+- 25+ marcas oficiales operativas
+
+### FASE 2 - EXPANSIÓN AMAZON + IA (3-4 semanas):
+- Amazon Business + Amazon Global
+- Validación IA avanzada
+- Sistema de alternativas
+- 50+ fuentes operativas
+
+### FASE 3 - TIENDAS ESPECIALIZADAS (4-5 semanas):
+- Grainger, RS Components, EFC, Würth
+- Tiendas B2B especializadas
+- 70+ fuentes operativas
+
+### FASE 4 - OPTIMIZACIÓN GLOBAL (4-6 semanas):
+- Todos los países objetivo
+- Monitoreo completo
+- Auto-mantenimiento
+- 100+ fuentes operativas
+
+## TECNOLOGÍAS NECESARIAS ACTUALIZADAS:
+
+### NUEVAS DEPENDENCIAS:
+- @nestjs/axios (HTTP requests)
+- playwright (web scraping)
+- ioredis (Redis client)
+- openai (IA validation)
+- cheerio (HTML parsing)
+- puppeteer-extra-plugin-stealth (anti-detection)
+- **NUEVO**: @nestjs/schedule (cron jobs para monitoreo)
+- **NUEVO**: @nestjs/bull (queue para scraping jobs)
+
+### SERVICIOS EXTERNOS:
+- OpenAI API
+- Google Gemini API  
+- Redis Cloud
+- Proxy service (Bright Data, ProxyMesh, etc.)
+- **NUEVO**: SimilarWeb API (análisis de tráfico)
+- **NUEVO**: Sentry (error monitoring)
+
+## ESTIMACIÓN DE COMPLEJIDAD ACTUALIZADA:
+
+### ALTA COMPLEJIDAD:
+- Web scraping anti-detección
+- Validación con IA
+- Performance < 15s con múltiples sources
+- **NUEVO**: Gestión dinámica de 100+ fuentes
+- **NUEVO**: Auto-mantenimiento predictivo
+
+### MEDIA COMPLEJIDAD:
+- Cache distribuido
+- Rate limiting
+- Multi-país/moneda
+- API design
+- **NUEVO**: Clasificación automática oficial vs distribuidor
+- **NUEVO**: Comparación cross-platform
+
+### BAJA COMPLEJIDAD:
+- CRUD básico
+- Autenticación API key (ya tenemos ✓)
+- Estructura NestJS (ya tenemos ✓)
+- **NUEVO**: Configuración por archivos JSON/YAML
+
+## VALOR AGREGADO ÚNICO ACTUALIZADO:
+
+### DIFERENCIACIÓN COMPETITIVA:
+1. **Cobertura masiva**: 100+ fuentes vs 10-20 de competencia
+2. **Precios oficiales**: Identificación automática vs manual
+3. **Mantenimiento automático**: Auto-reparación vs mantenimiento manual
+4. **Escalabilidad**: Agregar fuentes sin código vs desarrollo custom
+5. **Inteligencia**: Aprendizaje continuo vs configuración estática
+
+### CASOS DE USO ÚNICOS:
+- Comparar precio oficial Bosch vs distribuidor EFC
+- Encontrar mejor precio entre 6 países europeos
+- Alertar cuando precio oficial < precio distribuidor
+- Validar autenticidad de productos por fuente oficial
+
+## RECOMENDACIÓN FINAL ACTUALIZADA:
+
+**Enfoque híbrido priorizando marketplaces oficiales:**
+
+1. **MVP RÁPIDO** (8 semanas): MercadoLibre + Amazon Business
+2. **ESCALABILIDAD MASIVA**: 100+ fuentes en 6 meses
+3. **MANTENIMIENTO MÍNIMO**: Sistema auto-gestionado
+4. **VENTAJA COMPETITIVA**: Cobertura imposible de replicar manualmente
+
+**Esto nos convertiría en el líder absoluto del mercado** con una barrera de entrada altísima para competidores.
+
+¿Te parece que captura perfectamente nuestra visión expandida? 
